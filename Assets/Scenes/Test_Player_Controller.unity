@@ -185,11 +185,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1688392636952353578, guid: c2ba8db6319d0004781a0572cca9d394,
+        type: 3}
+      propertyPath: movementReference
+      value:
+      objectReference: {fileID: 604219378}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2ba8db6319d0004781a0572cca9d394, type: 3}
+--- !u!4 &377620404 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1111111111111111111, guid: c2ba8db6319d0004781a0572cca9d394,
+    type: 3}
+  m_PrefabInstance: {fileID: 377620403}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &604219375
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,6 +212,7 @@ GameObject:
   - component: {fileID: 604219378}
   - component: {fileID: 604219377}
   - component: {fileID: 604219376}
+  - component: {fileID: 604219379}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -275,13 +287,35 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 604219375}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.21643962, y: 0, z: 0, w: 0.976296}
-  m_LocalPosition: {x: 0, y: 5, z: -8}
+  m_LocalRotation: {x: 0.17364818, y: 0, z: 0, w: 0.98480775}
+  m_LocalPosition: {x: 0, y: 3.5, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
+--- !u!114 &604219379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 604219375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad7f29b8ebb1b44fa259a6ac2850fbd, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  target: {fileID: 377620404}
+  targetOffset: {x: 0, y: 0, z: 0}
+  mouseSensitivity: 0.15
+  minPitch: -20
+  maxPitch: 65
+  distance: 5
+  minDistance: 2
+  maxDistance: 8
+  zoomSpeed: 1.5
+  followSmoothTime: 0.08
 --- !u!1 &1998098273
 GameObject:
   m_ObjectHideFlags: 0

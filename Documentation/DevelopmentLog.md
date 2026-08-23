@@ -24,3 +24,17 @@
 - 创建玩家移动测试场景并完成运行验证
 
 当前 Player 模块保持独立，不包含第三人称摄像机、NPC、AI、战斗或其他玩法系统。
+
+### Commit 3: Add third person camera system
+
+Implemented:
+
+- Third-person camera follow
+- Mouse orbit controls
+- Pitch angle constraints
+- Smooth camera movement
+- Camera zoom
+- Cursor lock handling
+- Camera-relative player movement
+
+CameraController 仅依赖 CameraTarget Transform；PlayerController 通过可选的 movementReference 获取水平方向，保持两个模块低耦合。

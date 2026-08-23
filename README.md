@@ -16,6 +16,7 @@ Current:
 - WASD player movement
 - Sprint, jump, ground detection, and gravity
 - Reusable Player prefab and controller test scene
+- Third-person camera follow, orbit, pitch clamp, and zoom
 
 Future:
 
@@ -41,6 +42,7 @@ Completed:
 
 - ✓ Project structure initialization
 - ✓ Basic player controller system
+- ✓ Third-person camera system
 
 For the architecture, roadmap, and configuration decisions, see the [`Documentation`](Documentation/) directory.
 

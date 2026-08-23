@@ -13,6 +13,7 @@ namespace GenesisWorld.Player
         [Header("移动参数")]
         [SerializeField, Min(0f)] private float walkSpeed = 4f;
         [SerializeField, Min(0f)] private float runSpeed = 7f;
+        [SerializeField] private Transform movementReference;
 
         [Header("跳跃与重力")]
         [SerializeField, Min(0f)] private float jumpForce = 7f;
@@ -58,8 +59,7 @@ namespace GenesisWorld.Player
             bool isSprinting = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
             float currentSpeed = isSprinting ? runSpeed : walkSpeed;
 
-            // 当前阶段采用世界坐标移动；摄像机相对移动将在摄像机模块中接入。
-            Vector3 horizontalMovement = new Vector3(moveInput.x, 0f, moveInput.y) * currentSpeed;
+            Vector3 horizontalMovement = CalculateHorizontalMovement(moveInput, currentSpeed);
 
             if (IsGrounded && verticalVelocity < 0f)
             {
@@ -88,6 +88,19 @@ namespace GenesisWorld.Player
 
             // 防止斜向移动速度高于单轴移动速度。
             return Vector2.ClampMagnitude(new Vector2(horizontal, vertical), 1f);
+        }
+
+        private Vector3 CalculateHorizontalMovement(Vector2 moveInput, float currentSpeed)
+        {
+            if (movementReference == null)
+            {
+                return new Vector3(moveInput.x, 0f, moveInput.y) * currentSpeed;
+            }
+
+            // 只取相机在水平面的朝向，避免俯仰角影响角色的地面移动速度。
+            Vector3 forward = Vector3.ProjectOnPlane(movementReference.forward, Vector3.up).normalized;
+            Vector3 right = Vector3.ProjectOnPlane(movementReference.right, Vector3.up).normalized;
+            return (right * moveInput.x + forward * moveInput.y) * currentSpeed;
         }
 
         private void ApplyGravityAndMove(Vector3 horizontalMovement)
