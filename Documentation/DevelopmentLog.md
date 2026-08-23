@@ -13,3 +13,14 @@
 
 当前阶段不包含玩家控制、摄像机控制、NPC、AI 接口、自定义 Shader 或游戏玩法。
 
+### Commit 2: Add player controller system
+
+完成内容：
+
+- 基于新 Input System 实现 WASD 玩家移动
+- 实现 Shift 冲刺、Space 跳跃、地面检测与手动重力
+- 使用 CharacterController 处理碰撞与位移
+- 创建包含 CharacterController、PlayerController 和 Animator 预留组件的 Player Prefab
+- 创建玩家移动测试场景并完成运行验证
+
+当前 Player 模块保持独立，不包含第三人称摄像机、NPC、AI、战斗或其他玩法系统。

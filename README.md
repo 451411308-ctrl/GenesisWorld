@@ -6,13 +6,16 @@ GenesisWorld is a Unity-based interactive virtual environment integrating genera
 
 GenesisWorld is an open-source Unity demo for undergraduate digital media technology education and portfolio presentation. It explores how a low-poly 3D environment can combine procedural content generation, intelligent NPC interaction, real-time rendering, and AIGC-assisted asset workflows in a maintainable architecture.
 
-The current milestone establishes a clean, extensible project foundation. Gameplay and AI features will be introduced incrementally in later milestones.
+The current milestone adds a modular CharacterController-based player movement foundation. More gameplay and AI features will be introduced incrementally in later milestones.
 
 ## Features
 
 Current:
 
 - Unity project initialization
+- WASD player movement
+- Sprint, jump, ground detection, and gravity
+- Reusable Player prefab and controller test scene
 
 Future:
 
@@ -37,6 +40,7 @@ Current Version: **v0.1.0**
 Completed:
 
 - ✓ Project structure initialization
+- ✓ Basic player controller system
 
 For the architecture, roadmap, and configuration decisions, see the [`Documentation`](Documentation/) directory.
 
@@ -45,7 +49,7 @@ For the architecture, roadmap, and configuration decisions, see the [`Documentat
 1. Install Unity Hub and Unity **2022.3.62f3 LTS**.
 2. Add this repository as a project in Unity Hub.
 3. Open the project and allow Package Manager to restore dependencies.
-4. Open `Assets/Scenes/SampleScene.unity`.
+4. Open `Assets/Scenes/Test_Player_Controller.unity` and enter Play Mode.
+5. Use WASD to move, Shift to sprint, and Space to jump.
 
-> This repository is currently at the initialization stage. Player controls, NPCs, AI integration, procedural generation, and custom shader effects are intentionally not implemented yet.
-
+> NPCs, AI integration, procedural generation, custom shader effects, and a third-person camera are intentionally not implemented yet.
