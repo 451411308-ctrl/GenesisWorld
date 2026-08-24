@@ -1,80 +1,134 @@
 # GenesisWorld
 
-GenesisWorld is a Unity-based interactive virtual environment integrating procedural generation, real-time graphics and generative AI.
+**A Generative AI Driven Interactive Virtual Environment Based on Unity**
 
-## Overview
+**基于 Unity 与生成式人工智能的智能交互虚拟环境**
 
-GenesisWorld is an open-source experimental project exploring the intersection of generative AI, computer graphics, and interactive virtual environments. It is designed for undergraduate digital media technology learning, portfolio presentation, and future research-oriented development.
+## Overview / 项目概述
 
-The first milestone establishes a maintainable Unity foundation with a modular player controller and a third-person camera system. Procedural environments, intelligent interaction, and generative content will be developed incrementally in later phases.
+### English
 
-## Features
+GenesisWorld is a Unity-based interactive virtual environment project that explores the integration of:
 
-### Completed
+- Procedural generation
+- Real-time graphics
+- Generative AI
+- Intelligent interaction
+
+The project is maintained as an undergraduate technical open-source project for digital media technology study, portfolio presentation, and future research-oriented development.
+
+### 中文
+
+GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主要探索以下技术方向的融合：
+
+- 程序化内容生成
+- 实时图形渲染
+- 生成式人工智能
+- 智能交互
+
+项目按照本科生技术型开源项目标准持续维护，可用于数字媒体技术学习、项目展示，并为后续科研方向扩展提供基础。
+
+## Features / 功能特性
+
+### Completed / 已完成
+
+**English**
 
 - ✓ Unity project initialization
 - ✓ Player controller system
-- ✓ Third person camera system
+- ✓ Third-person camera system
 
-### Future
+**中文**
 
-- Procedural terrain generation
-- AI NPC interaction
-- Shader based rendering
-- AIGC asset generation
+- ✓ Unity 工程初始化
+- ✓ 玩家控制系统
+- ✓ 第三人称摄像机系统
 
-## Technology Stack
+### Planned / 计划功能
 
-- **Engine:** Unity 2022 LTS
-- **Language:** C#
-- **Rendering:** Universal Render Pipeline (URP)
-- **Version Control:** Git / GitHub
-- **Future AI:** LLM API
-
-## Current Version
-
-- **Version:** v0.1.0
-- **Milestone:** Core Framework Completed
-
-## Development Roadmap
-
-### Phase 1: Core Framework
-
-Completed:
-
-- Player controller
-- Third-person camera
-
-### Phase 2: Virtual Environment
-
-Planning:
+**English**
 
 - Procedural world generation
-
-### Phase 3: Intelligent Interaction
-
-Planning:
-
 - AI NPC interaction
+- Shader-based rendering
+- AIGC-assisted asset generation
 
-### Phase 4: Generative Content
+**中文**
 
-Planning:
+- 程序化世界生成
+- AI NPC 智能交互
+- 基于 Shader 的实时渲染
+- AIGC 辅助游戏资产生成
 
-- AIGC asset generation
+## Technology Stack / 技术栈
 
-## Getting Started
+| Category / 类别 | Technology / 技术 |
+|---|---|
+| Game Engine / 游戏引擎 | Unity 2022 LTS |
+| Language / 开发语言 | C# |
+| Rendering / 渲染 | Universal Render Pipeline (URP) |
+| Version Control / 版本管理 | Git & GitHub |
+| Future AI Integration / 后续 AI 集成 | LLM API / Generative AI |
+
+## Current Version / 当前版本
+
+**Version / 版本：** v0.1.0
+
+**Milestone / 里程碑：**
+
+Core Framework Completed
+
+核心基础框架完成
+
+## Development Roadmap / 开发路线
+
+### Phase 1 — Core Framework / 核心框架
+
+Completed / 已完成：
+
+- Player Controller / 玩家控制
+- Third-person Camera / 第三人称摄像机
+
+### Phase 2 — Virtual Environment / 虚拟环境
+
+Planned / 计划：
+
+- Procedural World Generation / 程序化世界生成
+
+### Phase 3 — Intelligent Interaction / 智能交互
+
+Planned / 计划：
+
+- AI NPC System / AI NPC 系统
+
+### Phase 4 — Generative Content / 生成式内容
+
+Planned / 计划：
+
+- AIGC Asset Generation / AIGC 游戏资产生成
+
+## Getting Started / 开始使用
+
+### English
 
 1. Install Unity Hub and Unity **2022.3.62f3 LTS**.
 2. Clone this repository and open it through Unity Hub.
-3. Allow Unity Package Manager to restore the project dependencies.
+3. Allow Unity Package Manager to restore project dependencies.
 4. Open `Assets/Scenes/Test_Player_Controller.unity`.
 5. Enter Play Mode. Use WASD to move, Shift to sprint, Space to jump, the mouse to orbit, and the scroll wheel to zoom.
 
-## Documentation
+### 中文
 
-- [Architecture](Documentation/Architecture.md)
-- [Project Configuration](Documentation/ProjectConfiguration.md)
-- [Development Log](Documentation/DevelopmentLog.md)
-- [Roadmap](Documentation/Roadmap.md)
-- [Week 1 Milestone](Documentation/Week1_Milestone.md)
+1. 安装 Unity Hub 与 Unity **2022.3.62f3 LTS**。
+2. 克隆本仓库，并通过 Unity Hub 打开工程。
+3. 等待 Unity Package Manager 完成依赖恢复。
+4. 打开 `Assets/Scenes/Test_Player_Controller.unity`。
+5. 进入 Play Mode：使用 WASD 移动、Shift 冲刺、Space 跳跃、鼠标环绕观察，并通过滚轮缩放视角。
+
+## Documentation / 项目文档
+
+- [Architecture / 项目架构](Documentation/Architecture.md)
+- [Project Configuration / 项目配置](Documentation/ProjectConfiguration.md)
+- [Development Log / 开发日志](Documentation/DevelopmentLog.md)
+- [Roadmap / 开发路线](Documentation/Roadmap.md)
+- [Week 1 Milestone / 第一周里程碑](Documentation/Week1_Milestone.md)
