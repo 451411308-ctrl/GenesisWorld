@@ -1,57 +1,80 @@
 # GenesisWorld
 
-GenesisWorld is a Unity-based interactive virtual environment integrating generative AI, procedural generation, and real-time graphics.
+GenesisWorld is a Unity-based interactive virtual environment integrating procedural generation, real-time graphics and generative AI.
 
 ## Overview
 
-GenesisWorld is an open-source Unity demo for undergraduate digital media technology education and portfolio presentation. It explores how a low-poly 3D environment can combine procedural content generation, intelligent NPC interaction, real-time rendering, and AIGC-assisted asset workflows in a maintainable architecture.
+GenesisWorld is an open-source experimental project exploring the intersection of generative AI, computer graphics, and interactive virtual environments. It is designed for undergraduate digital media technology learning, portfolio presentation, and future research-oriented development.
 
-The current milestone adds a modular CharacterController-based player movement foundation. More gameplay and AI features will be introduced incrementally in later milestones.
+The first milestone establishes a maintainable Unity foundation with a modular player controller and a third-person camera system. Procedural environments, intelligent interaction, and generative content will be developed incrementally in later phases.
 
 ## Features
 
-Current:
+### Completed
 
-- Unity project initialization
-- WASD player movement
-- Sprint, jump, ground detection, and gravity
-- Reusable Player prefab and controller test scene
-- Third-person camera follow, orbit, pitch clamp, and zoom
+- ✓ Unity project initialization
+- ✓ Player controller system
+- ✓ Third person camera system
 
-Future:
+### Future
 
-- Procedural world generation
+- Procedural terrain generation
 - AI NPC interaction
-- Shader rendering
+- Shader based rendering
 - AIGC asset generation
 
 ## Technology Stack
 
-- Unity 2022 LTS
-- C#
-- Universal Render Pipeline (URP)
-- Shader Graph
-- Git
-- AI API (planned)
+- **Engine:** Unity 2022 LTS
+- **Language:** C#
+- **Rendering:** Universal Render Pipeline (URP)
+- **Version Control:** Git / GitHub
+- **Future AI:** LLM API
 
-## Development Progress
+## Current Version
 
-Current Version: **v0.1.0**
+- **Version:** v0.1.0
+- **Milestone:** Core Framework Completed
+
+## Development Roadmap
+
+### Phase 1: Core Framework
 
 Completed:
 
-- ✓ Project structure initialization
-- ✓ Basic player controller system
-- ✓ Third-person camera system
+- Player controller
+- Third-person camera
 
-For the architecture, roadmap, and configuration decisions, see the [`Documentation`](Documentation/) directory.
+### Phase 2: Virtual Environment
+
+Planning:
+
+- Procedural world generation
+
+### Phase 3: Intelligent Interaction
+
+Planning:
+
+- AI NPC interaction
+
+### Phase 4: Generative Content
+
+Planning:
+
+- AIGC asset generation
 
 ## Getting Started
 
 1. Install Unity Hub and Unity **2022.3.62f3 LTS**.
-2. Add this repository as a project in Unity Hub.
-3. Open the project and allow Package Manager to restore dependencies.
-4. Open `Assets/Scenes/Test_Player_Controller.unity` and enter Play Mode.
-5. Use WASD to move, Shift to sprint, and Space to jump.
+2. Clone this repository and open it through Unity Hub.
+3. Allow Unity Package Manager to restore the project dependencies.
+4. Open `Assets/Scenes/Test_Player_Controller.unity`.
+5. Enter Play Mode. Use WASD to move, Shift to sprint, Space to jump, the mouse to orbit, and the scroll wheel to zoom.
 
-> NPCs, AI integration, procedural generation, custom shader effects, and a third-person camera are intentionally not implemented yet.
+## Documentation
+
+- [Architecture](Documentation/Architecture.md)
+- [Project Configuration](Documentation/ProjectConfiguration.md)
+- [Development Log](Documentation/DevelopmentLog.md)
+- [Roadmap](Documentation/Roadmap.md)
+- [Week 1 Milestone](Documentation/Week1_Milestone.md)
