@@ -53,3 +53,17 @@ Reorganized the GitHub project overview, added the Week 1 milestone report, and 
 **中文**
 
 整理 GitHub 项目主页，新增第一周里程碑报告，并为已完成的核心基础框架发布注解标签 `v0.1.0`。
+
+## Week 2 / 第二周
+
+### Commit 5
+
+`Add procedural terrain generation foundation`
+
+**English**
+
+Implemented the procedural terrain foundation with a responsibility-separated grid data generator and Unity terrain component. The system generates flat vertices, triangle indices, normalized UV coordinates, recalculated normals and bounds, and supports `MeshFilter`, `MeshRenderer`, and `MeshCollider` integration.
+
+**中文**
+
+完成程序化地形基础模块，将规则网格数据计算与 Unity 地形组件职责分离。系统可生成平坦顶点、三角形索引、归一化 UV，并重新计算法线与包围盒，同时支持 `MeshFilter`、`MeshRenderer` 和 `MeshCollider` 集成。

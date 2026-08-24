@@ -44,6 +44,18 @@ GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主
 - ✓ 玩家控制系统
 - ✓ 第三人称摄像机系统
 
+### In Progress / 开发中
+
+**English**
+
+- Procedural World Generation
+  - Flat grid mesh foundation completed
+
+**中文**
+
+- 程序化世界生成
+  - 平坦规则网格基础完成
+
 ### Planned / 计划功能
 
 **English**
@@ -132,3 +144,4 @@ Planned / 计划：
 - [Development Log / 开发日志](Documentation/DevelopmentLog.md)
 - [Roadmap / 开发路线](Documentation/Roadmap.md)
 - [Week 1 Milestone / 第一周里程碑](Documentation/Week1_Milestone.md)
+- [Procedural Terrain Foundation / 程序化地形基础](Documentation/ProceduralTerrain.md)
