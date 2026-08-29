@@ -24,8 +24,8 @@ namespace GenesisWorld.Procedural
     }
 
     /// <summary>
-    /// 负责生成平坦规则网格的顶点、三角形索引和 UV 数据。
-    /// 该类不依赖场景对象，也不包含高度或 Noise 逻辑。
+    /// 负责生成规则网格的顶点、三角形索引和 UV 数据。
+    /// 顶点高度由连续的 Perlin Noise 采样决定，该类不依赖场景对象。
     /// </summary>
     public static class MeshGenerator
     {
@@ -33,9 +33,18 @@ namespace GenesisWorld.Procedural
             float width,
             float depth,
             int xSegments,
-            int zSegments)
+            int zSegments,
+            float noiseScale,
+            float heightScale,
+            Vector2 noiseOffset)
         {
-            ValidateParameters(width, depth, xSegments, zSegments);
+            ValidateParameters(
+                width,
+                depth,
+                xSegments,
+                zSegments,
+                noiseScale,
+                heightScale);
 
             int verticesPerRow = xSegments + 1;
             int vertexCount = checked(verticesPerRow * (zSegments + 1));
@@ -45,7 +54,16 @@ namespace GenesisWorld.Procedural
             Vector2[] uv = new Vector2[vertexCount];
             int[] triangles = new int[triangleIndexCount];
 
-            GenerateVerticesAndUV(width, depth, xSegments, zSegments, vertices, uv);
+            GenerateVerticesAndUV(
+                width,
+                depth,
+                xSegments,
+                zSegments,
+                noiseScale,
+                heightScale,
+                noiseOffset,
+                vertices,
+                uv);
             GenerateTriangles(xSegments, zSegments, verticesPerRow, triangles);
 
             return new GridMeshData(vertices, triangles, uv);
@@ -56,6 +74,9 @@ namespace GenesisWorld.Procedural
             float depth,
             int xSegments,
             int zSegments,
+            float noiseScale,
+            float heightScale,
+            Vector2 noiseOffset,
             Vector3[] vertices,
             Vector2[] uv)
         {
@@ -69,10 +90,19 @@ namespace GenesisWorld.Procedural
             {
                 for (int x = 0; x <= xSegments; x++)
                 {
+                    float xPosition = xOrigin + x * xStep;
+                    float zPosition = zOrigin + z * zStep;
+                    float sampleX = (xPosition + noiseOffset.x) * noiseScale;
+                    float sampleZ = (zPosition + noiseOffset.y) * noiseScale;
+                    float noiseValue = Mathf.PerlinNoise(sampleX, sampleZ);
+
+                    // 将 0–1 的噪声中心化，使地形围绕局部 Y=0 上下起伏。
+                    float height = (noiseValue - 0.5f) * heightScale;
+
                     vertices[vertexIndex] = new Vector3(
-                        xOrigin + x * xStep,
-                        0f,
-                        zOrigin + z * zStep);
+                        xPosition,
+                        height,
+                        zPosition);
 
                     // UV 规范化到 0–1，便于后续材质和 Shader 直接复用。
                     uv[vertexIndex] = new Vector2(
@@ -117,7 +147,9 @@ namespace GenesisWorld.Procedural
             float width,
             float depth,
             int xSegments,
-            int zSegments)
+            int zSegments,
+            float noiseScale,
+            float heightScale)
         {
             if (width <= 0f)
             {
@@ -137,6 +169,16 @@ namespace GenesisWorld.Procedural
             if (zSegments < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(zSegments), "Z segments must be at least one.");
+            }
+
+            if (noiseScale <= 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(noiseScale), "Noise scale must be greater than zero.");
+            }
+
+            if (heightScale < 0f)
+            {
+                throw new ArgumentOutOfRangeException(nameof(heightScale), "Height scale cannot be negative.");
             }
         }
     }

@@ -21,6 +21,16 @@ namespace GenesisWorld.Procedural
         [SerializeField, Min(1)] private int xSegments = 20;
         [SerializeField, Min(1)] private int zSegments = 20;
 
+        [Header("噪声设置")]
+        [Tooltip("控制 Perlin Noise 的采样频率。数值越大，地形变化越密集。")]
+        [SerializeField, Min(0.0001f)] private float noiseScale = 0.1f;
+
+        [Tooltip("控制地形沿 Y 轴的最大起伏幅度。设为 0 时生成平地。")]
+        [SerializeField, Min(0f)] private float heightScale = 5f;
+
+        [Tooltip("移动 Perlin Noise 的采样区域，不引入随机种子。")]
+        [SerializeField] private Vector2 noiseOffset = Vector2.zero;
+
         [Header("碰撞")]
         [SerializeField] private bool updateMeshCollider = true;
 
@@ -50,7 +60,10 @@ namespace GenesisWorld.Procedural
                 width,
                 depth,
                 xSegments,
-                zSegments);
+                zSegments,
+                noiseScale,
+                heightScale,
+                noiseOffset);
 
             Mesh mesh = GetOrCreateMesh(meshData.VertexCount);
             mesh.vertices = meshData.Vertices;
@@ -123,6 +136,8 @@ namespace GenesisWorld.Procedural
             depth = Mathf.Max(0.01f, depth);
             xSegments = Mathf.Max(1, xSegments);
             zSegments = Mathf.Max(1, zSegments);
+            noiseScale = Mathf.Max(0.0001f, noiseScale);
+            heightScale = Mathf.Max(0f, heightScale);
         }
 
         private void OnDestroy()

@@ -67,3 +67,15 @@ Implemented the procedural terrain foundation with a responsibility-separated gr
 **中文**
 
 完成程序化地形基础模块，将规则网格数据计算与 Unity 地形组件职责分离。系统可生成平坦顶点、三角形索引、归一化 UV，并重新计算法线与包围盒，同时支持 `MeshFilter`、`MeshRenderer` 和 `MeshCollider` 集成。
+
+### Commit 6
+
+`Implement noise-based terrain generation`
+
+**English**
+
+Added centered Perlin-noise-based vertex height generation to the existing grid mesh. Added configurable noise scale, height scale, and sampling offset while preserving triangle topology and UVs. Normals, bounds, and the mesh collider continue to update after generation.
+
+**中文**
+
+在现有规则网格基础上加入中心化 Perlin Noise 高度采样，并提供噪声尺度、高度尺度和采样偏移参数。三角形拓扑与 UV 保持不变，生成后继续更新法线、包围盒和网格碰撞体。

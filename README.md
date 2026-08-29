@@ -49,12 +49,18 @@ GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主
 **English**
 
 - Procedural World Generation
-  - Flat grid mesh foundation completed
+  - Grid Mesh Foundation ✅
+  - Noise-based Terrain ✅
+  - Seed System ⏳
+  - Environment Spawning ⏳
 
 **中文**
 
 - 程序化世界生成
-  - 平坦规则网格基础完成
+  - 规则网格基础 ✅
+  - 噪声地形生成 ✅
+  - 随机种子系统 ⏳
+  - 环境物体生成 ⏳
 
 ### Planned / 计划功能
 

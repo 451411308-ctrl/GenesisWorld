@@ -4,11 +4,11 @@
 
 ### English
 
-The first procedural environment milestone builds a flat, reusable grid mesh. It establishes the geometry pipeline needed by later terrain algorithms without introducing noise, chunk streaming, or gameplay logic.
+The procedural terrain system builds a reusable grid mesh and now samples Perlin Noise to produce continuous hills. The geometry pipeline remains independent from chunk streaming and gameplay logic.
 
 ### 中文
 
-程序化环境的首个里程碑实现了一个平坦、可复用的规则网格。它为后续地形算法建立几何生成管线，但本阶段不引入噪声、区块流式加载或玩法逻辑。
+程序化地形系统以可复用规则网格为基础，现已通过 Perlin Noise 采样生成连续山丘。几何生成管线仍与区块流式加载和玩法逻辑保持独立。
 
 ## Architecture / 架构
 
@@ -80,6 +80,9 @@ UV 坐标将规则网格映射到归一化的 `[0, 1]` 纹理空间，使材质�
 | Depth / 深度 | 20 |
 | X Segments / X 轴分段 | 20 |
 | Z Segments / Z 轴分段 | 20 |
+| Noise Scale / 噪声尺度 | 0.1 |
+| Height Scale / 高度尺度 | 5 |
+| Noise Offset / 噪声偏移 | (0, 0) |
 
 The default mesh contains:
 
@@ -93,12 +96,64 @@ The default mesh contains:
 - 三角形：`20 × 20 × 2 = 800`
 - 三角形索引：`800 × 3 = 2400`
 
+## Noise-based Height Generation / 基于噪声的高度生成
+
+### English
+
+Commit 5 established the grid topology:
+
+```text
+Vertex = (x, 0, z)
+```
+
+Commit 6 preserves the same vertices, triangle connections, and UV layout, but changes each vertex's Y coordinate:
+
+```text
+sampleX = (x + offsetX) * noiseScale
+sampleZ = (z + offsetZ) * noiseScale
+height  = (PerlinNoise(sampleX, sampleZ) - 0.5) * heightScale
+Vertex  = (x, height, z)
+```
+
+`Mathf.PerlinNoise` is not independent random noise at every point. Neighboring samples change smoothly, unlike an abrupt sequence such as `1, 9, 2, 8`. This continuity makes Perlin Noise useful for terrain, clouds, textures, and procedural generation.
+
+- **Noise Scale** controls sampling frequency. Lower values produce broad, gentle hills; higher values produce denser changes.
+- **Height Scale** controls only the Y-axis amplitude. It does not change the mesh topology. A value of `0` produces a flat grid.
+- **Noise Offset** moves the sampled region and produces a different terrain shape without introducing a random seed.
+
+The noise value is centered from `[0, 1]` to approximately `[-0.5, 0.5]`. Therefore, the generated surface varies above and below local `Y = 0` instead of being lifted entirely upward. Normals and bounds are recalculated after height generation, and the `MeshCollider` receives the updated mesh.
+
+### 中文
+
+Commit 5 建立了规则网格拓扑：
+
+```text
+Vertex = (x, 0, z)
+```
+
+Commit 6 保持顶点数量、三角形连接关系和 UV 布局不变，只修改每个顶点的 Y 坐标：
+
+```text
+sampleX = (x + offsetX) * noiseScale
+sampleZ = (z + offsetZ) * noiseScale
+height  = (PerlinNoise(sampleX, sampleZ) - 0.5) * heightScale
+Vertex  = (x, height, z)
+```
+
+`Mathf.PerlinNoise` 并不是每个点彼此独立的完全随机数。相邻采样值会平滑变化，不会像 `1、9、2、8` 这样突然跳变。因此，它适合用于地形、云层、纹理和程序化生成。
+
+- **Noise Scale** 控制采样频率。较小值生成宽阔、平缓的山丘；较大值产生更密集的变化。
+- **Height Scale** 只控制 Y 轴起伏幅度，不改变网格拓扑。设为 `0` 时得到平坦网格。
+- **Noise Offset** 用于移动采样区域，在不引入随机种子的情况下得到不同地形形态。
+
+实现中将 `[0, 1]` 的噪声值中心化到约 `[-0.5, 0.5]`，因此地形围绕局部 `Y = 0` 上下起伏，而不是整体向上抬升。高度生成后会重新计算法线和包围盒，并将更新后的网格同步给 `MeshCollider`。
+
 ## Unity Editor Setup / Unity 编辑器配置
 
 1. Create an empty GameObject named `ProceduralTerrain`.
 2. Add `TerrainGenerator`. Unity automatically adds `MeshFilter`, `MeshRenderer`, and `MeshCollider` through component requirements.
 3. Assign a URP-compatible material to `MeshRenderer`.
-4. Keep the default parameters or adjust the size and segment counts in the Inspector.
+4. Keep the default parameters or adjust the size, segment counts, and noise settings in the Inspector.
 5. Enter Play Mode, or use **Generate Terrain** from the component context menu for an editor preview.
 
 中文步骤：
@@ -106,11 +161,11 @@ The default mesh contains:
 1. 创建名为 `ProceduralTerrain` 的空 GameObject。
 2. 添加 `TerrainGenerator`；Unity 会根据组件依赖自动添加 `MeshFilter`、`MeshRenderer` 和 `MeshCollider`。
 3. 为 `MeshRenderer` 指定兼容 URP 的材质。
-4. 保持默认参数，或在 Inspector 中调整尺寸与分段数量。
+4. 保持默认参数，或在 Inspector 中调整尺寸、分段数量与噪声设置。
 5. 进入 Play Mode；也可从组件上下文菜单选择 **Generate Terrain** 进行编辑器预览。
 
 ## Current Scope / 当前范围
 
-This commit only provides the flat grid mesh foundation. Height noise, terrain chunks, streaming, level of detail, biome generation, and object placement are reserved for later development.
+This stage provides one centered Perlin Noise height layer. Random seeds, complex noise stacks, terrain chunks, streaming, level of detail, biome generation, and object placement remain outside the current scope.
 
-本次提交仅提供平坦规则网格基础。高度噪声、地形区块、流式加载、细节层级、生态区域生成和物体放置将在后续阶段实现。
+本阶段仅提供一层中心化 Perlin Noise 高度。随机种子、复杂噪声叠加、地形区块、流式加载、细节层级、生态区域生成和物体放置仍不在当前范围内。
