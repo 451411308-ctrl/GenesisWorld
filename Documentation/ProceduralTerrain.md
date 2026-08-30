@@ -83,6 +83,7 @@ UV 坐标将规则网格映射到归一化的 `[0, 1]` 纹理空间，使材质�
 | Noise Scale / 噪声尺度 | 0.1 |
 | Height Scale / 高度尺度 | 5 |
 | Noise Offset / 噪声偏移 | (0, 0) |
+| Seed / 种子 | 12345 |
 
 The default mesh contains:
 
@@ -148,6 +149,72 @@ Vertex  = (x, height, z)
 
 实现中将 `[0, 1]` 的噪声值中心化到约 `[-0.5, 0.5]`，因此地形围绕局部 `Y = 0` 上下起伏，而不是整体向上抬升。高度生成后会重新计算法线和包围盒，并将更新后的网格同步给 `MeshCollider`。
 
+## Seeded Procedural Generation / 基于种子的程序化生成
+
+### English
+
+A seed is not a terrain height. It is the deterministic input used to select a stable region of the Perlin Noise field:
+
+```text
+Seed
+  |
+  v
+Local System.Random(seed)
+  |
+  v
+Seed-generated offset (-10000 to 10000)
+  |
+  + Manual Noise Offset
+  |
+  v
+Final Noise Offset
+  |
+  v
+Perlin Noise Sampling -> Vertex Height -> Terrain
+```
+
+`System.Random(seed)` produces the same sequence for the same seed on the same platform and code path. The first two values are mapped to a bounded X/Z sampling offset. Since `Mathf.PerlinNoise` also returns the same result for the same input coordinates, the following rule holds:
+
+```text
+Same Seed + Same Terrain Parameters = Same Terrain
+```
+
+The manual **Noise Offset** remains available and is added to the generated seed offset. It can therefore be used for controlled debugging without changing the selected world seed.
+
+The generator intentionally uses a local `System.Random` instance instead of `UnityEngine.Random.InitState`. It does not alter Unity's global random state and therefore cannot silently affect gameplay, effects, AI, or future object spawning systems. **Randomize Seed** only chooses a new integer seed and then calls the same deterministic generation pipeline.
+
+### 中文
+
+Seed（种子）并不是地形高度，而是确定性随机过程的输入，用于稳定选择 Perlin Noise 中的采样区域：
+
+```text
+Seed
+  |
+  v
+局部 System.Random(seed)
+  |
+  v
+种子偏移（-10000 到 10000）
+  |
+  + 手动 Noise Offset
+  |
+  v
+最终 Noise Offset
+  |
+  v
+Perlin Noise 采样 -> 顶点高度 -> 地形
+```
+
+在相同平台和相同代码路径下，`System.Random(seed)` 会为相同 Seed 产生相同随机序列。系统将前两个数值映射为有界的 X/Z 采样偏移。由于 `Mathf.PerlinNoise` 对相同输入坐标也会返回相同结果，因此满足：
+
+```text
+相同 Seed + 相同地形参数 = 相同地形
+```
+
+原有手动 **Noise Offset** 仍然保留，并与种子偏移相加。因此开发者可以在不改变世界 Seed 的前提下，对采样区域进行可控调试。
+
+生成器使用局部 `System.Random`，而不是调用 `UnityEngine.Random.InitState`，所以不会修改 Unity 的全局随机状态，也不会隐式影响玩法、特效、AI 或未来的物体生成系统。**Randomize Seed** 仅负责选择一个新的整数 Seed，之后仍通过同一条确定性管线生成地形。
+
 ## Unity Editor Setup / Unity 编辑器配置
 
 1. Create an empty GameObject named `ProceduralTerrain`.
@@ -166,6 +233,6 @@ Vertex  = (x, height, z)
 
 ## Current Scope / 当前范围
 
-This stage provides one centered Perlin Noise height layer. Random seeds, complex noise stacks, terrain chunks, streaming, level of detail, biome generation, and object placement remain outside the current scope.
+This stage provides one centered Perlin Noise height layer with deterministic seed selection. Complex noise stacks, terrain chunks, streaming, level of detail, biome generation, and object placement remain outside the current scope.
 
-本阶段仅提供一层中心化 Perlin Noise 高度。随机种子、复杂噪声叠加、地形区块、流式加载、细节层级、生态区域生成和物体放置仍不在当前范围内。
+本阶段提供一层中心化 Perlin Noise 高度与确定性种子选择。复杂噪声叠加、地形区块、流式加载、细节层级、生态区域生成和物体放置仍不在当前范围内。

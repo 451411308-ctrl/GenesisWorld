@@ -161,6 +161,7 @@ MonoBehaviour:
   noiseScale: 0.1
   heightScale: 5
   noiseOffset: {x: 0, y: 0}
+  seed: 12345
   updateMeshCollider: 1
 --- !u!64 &285905983
 MeshCollider:

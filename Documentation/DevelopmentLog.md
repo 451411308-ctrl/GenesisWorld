@@ -79,3 +79,15 @@ Added centered Perlin-noise-based vertex height generation to the existing grid 
 **中文**
 
 在现有规则网格基础上加入中心化 Perlin Noise 高度采样，并提供噪声尺度、高度尺度和采样偏移参数。三角形拓扑与 UV 保持不变，生成后继续更新法线、包围盒和网格碰撞体。
+
+### Commit 7
+
+`Add seeded procedural world generation`
+
+**English**
+
+Added deterministic seed-based terrain generation by mapping each seed through a local `System.Random` instance to a stable Perlin Noise sampling offset. Manual noise offset remains available for controlled debugging, and the module does not modify Unity's global random state.
+
+**中文**
+
+新增基于 Seed 的确定性地形生成机制，通过局部 `System.Random` 将每个 Seed 稳定映射到 Perlin Noise 采样偏移，使相同 Seed 能够复现相同地形。系统保留手动噪声偏移用于可控调试，且不会修改 Unity 的全局随机状态。

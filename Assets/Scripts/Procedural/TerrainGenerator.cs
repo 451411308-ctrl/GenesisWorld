@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -28,8 +29,12 @@ namespace GenesisWorld.Procedural
         [Tooltip("控制地形沿 Y 轴的最大起伏幅度。设为 0 时生成平地。")]
         [SerializeField, Min(0f)] private float heightScale = 5f;
 
-        [Tooltip("移动 Perlin Noise 的采样区域，不引入随机种子。")]
+        [Tooltip("在种子生成的偏移基础上，额外移动 Perlin Noise 的采样区域。")]
         [SerializeField] private Vector2 noiseOffset = Vector2.zero;
+
+        [Header("种子设置")]
+        [Tooltip("相同种子与相同地形参数会生成完全一致的地形。")]
+        [SerializeField] private int seed = 12345;
 
         [Header("碰撞")]
         [SerializeField] private bool updateMeshCollider = true;
@@ -40,6 +45,8 @@ namespace GenesisWorld.Procedural
 
         public int VertexCount { get; private set; }
         public int TriangleCount { get; private set; }
+        public int Seed => seed;
+        public Vector2 SeedOffset { get; private set; }
 
         private void Awake()
         {
@@ -56,6 +63,9 @@ namespace GenesisWorld.Procedural
         {
             CacheComponents();
 
+            SeedOffset = GenerateSeedOffset(seed);
+            Vector2 finalNoiseOffset = noiseOffset + SeedOffset;
+
             GridMeshData meshData = MeshGenerator.GenerateGrid(
                 width,
                 depth,
@@ -63,7 +73,7 @@ namespace GenesisWorld.Procedural
                 zSegments,
                 noiseScale,
                 heightScale,
-                noiseOffset);
+                finalNoiseOffset);
 
             Mesh mesh = GetOrCreateMesh(meshData.VertexCount);
             mesh.vertices = meshData.Vertices;
@@ -77,6 +87,35 @@ namespace GenesisWorld.Procedural
 
             VertexCount = meshData.VertexCount;
             TriangleCount = meshData.TriangleCount;
+        }
+
+        [ContextMenu("Randomize Seed")]
+        public void RandomizeSeed()
+        {
+            int newSeed;
+
+            do
+            {
+                // Guid 仅用于选择一个新种子；地形生成本身仍完全由 seed 决定。
+                newSeed = Guid.NewGuid().GetHashCode();
+            }
+            while (newSeed == seed);
+
+            seed = newSeed;
+            GenerateTerrain();
+        }
+
+        private static Vector2 GenerateSeedOffset(int worldSeed)
+        {
+            const double minimumOffset = -10000d;
+            const double offsetRange = 20000d;
+            var random = new System.Random(worldSeed);
+
+            // 使用局部随机源，避免污染 UnityEngine.Random 的全局状态。
+            float offsetX = (float)(minimumOffset + random.NextDouble() * offsetRange);
+            float offsetZ = (float)(minimumOffset + random.NextDouble() * offsetRange);
+
+            return new Vector2(offsetX, offsetZ);
         }
 
         private void CacheComponents()
