@@ -47,6 +47,13 @@ namespace GenesisWorld.Procedural
         public int TriangleCount { get; private set; }
         public int Seed => seed;
         public Vector2 SeedOffset { get; private set; }
+        public float Width => width;
+        public float Depth => depth;
+        public float HeightScale => heightScale;
+        public MeshCollider TerrainCollider => meshCollider;
+        public bool IsGenerated => generatedMesh != null && generatedMesh.vertexCount > 0;
+
+        public event Action TerrainGenerated;
 
         private void Awake()
         {
@@ -55,7 +62,10 @@ namespace GenesisWorld.Procedural
 
         private void Start()
         {
-            GenerateTerrain();
+            if (!IsGenerated)
+            {
+                GenerateTerrain();
+            }
         }
 
         [ContextMenu("Generate Terrain")]
@@ -87,6 +97,7 @@ namespace GenesisWorld.Procedural
 
             VertexCount = meshData.VertexCount;
             TriangleCount = meshData.TriangleCount;
+            TerrainGenerated?.Invoke();
         }
 
         [ContextMenu("Randomize Seed")]

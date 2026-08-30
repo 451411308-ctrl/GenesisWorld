@@ -91,3 +91,15 @@ Added deterministic seed-based terrain generation by mapping each seed through a
 **中文**
 
 新增基于 Seed 的确定性地形生成机制，通过局部 `System.Random` 将每个 Seed 稳定映射到 Perlin Noise 采样偏移，使相同 Seed 能够复现相同地形。系统保留手动噪声偏移用于可控调试，且不会修改 Unity 的全局随机状态。
+
+### Commit 8
+
+`Add procedural environment spawning`
+
+**English**
+
+Added deterministic tree and rock spawning on generated terrain using the existing World Seed, an independent local random stream, terrain raycasts, slope filtering, minimum spacing, and configurable spawn rules. Added formal placeholder prefabs and automatic regeneration after terrain updates.
+
+**中文**
+
+基于现有 World Seed 新增确定性的树木与岩石生成系统，通过独立局部随机流、地形射线检测、坡度过滤、最小间距和可配置规则，将环境物体稳定放置到程序化地形表面；同时加入正式占位 Prefab，并在地形更新后自动重新生成环境。

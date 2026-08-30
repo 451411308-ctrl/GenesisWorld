@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 285905984}
   - component: {fileID: 285905983}
   - component: {fileID: 285905982}
+  - component: {fileID: 285905987}
   m_Layer: 0
   m_Name: ProceduralTerrain
   m_TagString: Untagged
@@ -250,6 +251,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &285905987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 285905981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1602cde880d04c1458aa0a2602ca2350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  terrainGenerator: {fileID: 285905982}
+  generateOnStart: 1
+  treePrefabs:
+  - {fileID: 5627653322071980697, guid: ed220cd6da1e83648a081b8a7e0010ea, type: 3}
+  rockPrefabs:
+  - {fileID: 4080373746280240170, guid: d5546d2860a589243a348dd5adfbba3b, type: 3}
+  treeCount: 30
+  rockCount: 15
+  spawnMargin: 1
+  minimumSpacing: 1.2
+  maxTreeSlope: 30
+  maxRockSlope: 45
+  centerClearRadius: 2
+  maxAttemptsPerObject: 20
+  treeScaleRange: {x: 0.8, y: 1.2}
+  rockScaleRange: {x: 0.7, y: 1.3}
 --- !u!1001 &377620403
 PrefabInstance:
   m_ObjectHideFlags: 0
