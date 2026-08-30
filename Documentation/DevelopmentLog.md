@@ -103,3 +103,15 @@ Added deterministic tree and rock spawning on generated terrain using the existi
 **中文**
 
 基于现有 World Seed 新增确定性的树木与岩石生成系统，通过独立局部随机流、地形射线检测、坡度过滤、最小间距和可配置规则，将环境物体稳定放置到程序化地形表面；同时加入正式占位 Prefab，并在地形更新后自动重新生成环境。
+
+### Commit 9
+
+`Integrate low-poly environment`
+
+**English**
+
+Integrated presentation-ready, project-created low-poly environment assets into the deterministic procedural world pipeline. Added two tree variants, three rock variants, unified URP materials, ground-level pivots, simplified colliders, updated scene composition, and a real Unity Game View showcase image while preserving terrain generation and seeded spawn rules.
+
+**中文**
+
+将适合项目展示的自制 Low-poly 环境资产接入现有确定性程序化世界生成流程，新增 2 种树木、3 种岩石、统一 URP 材质、底部 Pivot、简化 Collider、场景构图与真实 Unity Game View 展示图；地形生成与 Seed 生成规则保持不变。

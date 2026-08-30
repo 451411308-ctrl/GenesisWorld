@@ -37,12 +37,14 @@ GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主
 - ✓ Unity project initialization
 - ✓ Player controller system
 - ✓ Third-person camera system
+- ✓ Stylized low-poly environment integration
 
 **中文**
 
 - ✓ Unity 工程初始化
 - ✓ 玩家控制系统
 - ✓ 第三人称摄像机系统
+- ✓ 风格化 Low-poly 环境资产集成
 
 ### In Progress / 开发中
 
@@ -53,9 +55,10 @@ GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主
   - Noise-based Terrain ✅
   - Seeded World Generation ✅
   - Procedural Environment Spawning ✅
-  - Low-poly Environment Integration ⏳
+  - Low-poly Environment Integration ✅
+  - Procedural World Milestone ⏳
 
-Trees and rocks are deterministically placed on the generated terrain from the World Seed.
+Two tree variants and three rock variants are deterministically selected and placed on the generated terrain from the World Seed.
 
 **中文**
 
@@ -64,9 +67,18 @@ Trees and rocks are deterministically placed on the generated terrain from the W
   - 噪声地形生成 ✅
   - 确定性种子世界生成 ✅
   - 程序化环境物体生成 ✅
-  - Low-poly 环境资产集成 ⏳
+  - Low-poly 环境资产集成 ✅
+  - 程序化世界里程碑 ⏳
 
-树木和岩石会根据 World Seed 确定性地放置到生成地形表面。
+系统会根据 World Seed 确定性选择并放置 2 种树木与 3 种岩石 Variant。
+
+## Showcase / 项目展示
+
+![GenesisWorld stylized low-poly procedural environment](Documentation/Images/GenesisWorld_ProceduralEnvironment_01.png)
+
+The screenshot is captured from the real Unity Game View using seed `1001`.
+
+截图来自真实 Unity Game View，使用 World Seed `1001`。
 
 ### Planned / 计划功能
 
@@ -157,3 +169,4 @@ Planned / 计划：
 - [Roadmap / 开发路线](Documentation/Roadmap.md)
 - [Week 1 Milestone / 第一周里程碑](Documentation/Week1_Milestone.md)
 - [Procedural Terrain Foundation / 程序化地形基础](Documentation/ProceduralTerrain.md)
+- [Procedural Environment / 程序化环境生成](Documentation/ProceduralEnvironment.md)

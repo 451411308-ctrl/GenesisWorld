@@ -266,19 +266,22 @@ MonoBehaviour:
   terrainGenerator: {fileID: 285905982}
   generateOnStart: 1
   treePrefabs:
-  - {fileID: 5627653322071980697, guid: ed220cd6da1e83648a081b8a7e0010ea, type: 3}
+  - {fileID: 8949739144470912979, guid: 1b00620d70c046c41a0c62adaa7933d3, type: 3}
+  - {fileID: 4839764362830380943, guid: 1f758d0eb8799094f8955f8d70d54c7a, type: 3}
   rockPrefabs:
-  - {fileID: 4080373746280240170, guid: d5546d2860a589243a348dd5adfbba3b, type: 3}
-  treeCount: 30
-  rockCount: 15
+  - {fileID: 167202623046298454, guid: f1a3d7bb37fb3f34abfcf0e53130cb2a, type: 3}
+  - {fileID: 3552066513190570050, guid: 50d2661e63edaee469bc4862062ccd40, type: 3}
+  - {fileID: 5372849720728269889, guid: 97c1d967ee39da2428b2b4659d372bd4, type: 3}
+  treeCount: 24
+  rockCount: 14
   spawnMargin: 1
-  minimumSpacing: 1.2
+  minimumSpacing: 1.45
   maxTreeSlope: 30
   maxRockSlope: 45
   centerClearRadius: 2
   maxAttemptsPerObject: 20
-  treeScaleRange: {x: 0.8, y: 1.2}
-  rockScaleRange: {x: 0.7, y: 1.3}
+  treeScaleRange: {x: 0.85, y: 1.15}
+  rockScaleRange: {x: 0.75, y: 1.25}
 --- !u!1001 &377620403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -608,8 +611,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 1, g: 0.94, b: 0.84, a: 1}
+  m_Intensity: 1.15
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -667,7 +670,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2014991094}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821794, y: -0.23456973, z: 0.10938166, w: 0.8754261}
+  m_LocalRotation: {x: 0.39098036, y: -0.25180724, z: 0.112111814, w: 0.87815624}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

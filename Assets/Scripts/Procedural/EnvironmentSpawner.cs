@@ -143,6 +143,9 @@ namespace GenesisWorld.Procedural
             {
                 if (Application.isPlaying)
                 {
+                    // Destroy 会延迟到帧末执行；先停用并改名，避免同帧重新生成时出现两个有效根节点。
+                    rootToRemove.gameObject.SetActive(false);
+                    rootToRemove.name = $"{GeneratedRootName} (Pending Destroy)";
                     Destroy(rootToRemove.gameObject);
                 }
                 else
