@@ -1,179 +1,139 @@
 # GenesisWorld
 
-**A Generative AI Driven Interactive Virtual Environment Based on Unity**
+**English** | [简体中文](./README.zh-CN.md)
 
-**基于 Unity 与生成式人工智能的智能交互虚拟环境**
+> A Unity-based generative virtual world prototype featuring deterministic procedural terrain and environment generation.
 
-## Overview / 项目概述
+![Unity 2022.3 LTS](https://img.shields.io/badge/Unity-2022.3%20LTS-000000?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-512BD4?logo=csharp) ![URP](https://img.shields.io/badge/Rendering-URP-0C84FF) ![Version](https://img.shields.io/badge/version-v0.2.0-2ea44f)
 
-### English
+GenesisWorld explores how procedural generation, real-time rendering, and future generative AI systems can be combined into an interactive virtual environment. The current release is a procedural-world foundation—not a complete game or an implemented AI product.
 
-GenesisWorld is a Unity-based interactive virtual environment project that explores the integration of:
+## Showcase
 
-- Procedural generation
-- Real-time graphics
-- Generative AI
-- Intelligent interaction
+![GenesisWorld procedural environment generated with seed 1001](Documentation/Images/GenesisWorld_ProceduralEnvironment_01.png)
 
-The project is maintained as an undergraduate technical open-source project for digital media technology study, portfolio presentation, and future research-oriented development.
+Real Unity Game View capture using world seed `1001`.
 
-### 中文
+## Overview
 
-GenesisWorld 是一个基于 Unity 开发的智能交互虚拟环境项目，主要探索以下技术方向的融合：
+GenesisWorld is an open-source Unity project for digital media technology study, portfolio presentation, and research-oriented experimentation. It emphasizes modular responsibilities, reproducible generation, documented asset provenance, and incremental milestones.
 
-- 程序化内容生成
-- 实时图形渲染
-- 生成式人工智能
-- 智能交互
+## Current Features
 
-项目按照本科生技术型开源项目标准持续维护，可用于数字媒体技术学习、项目展示，并为后续科研方向扩展提供基础。
+- CharacterController movement, sprinting, jumping, gravity, and ground detection
+- Third-person camera with mouse orbit, pitch clamp, smoothing, and scroll zoom
+- Procedural grid vertices, triangles, UVs, normals, and bounds
+- Configurable Perlin-noise terrain height
+- Deterministic world seeds without changing Unity's global random state
+- Terrain Mesh lifecycle, MeshCollider updates, and a generation event
+- Deterministic tree and rock spawning using raycasts, slope limits, and spacing
+- Seeded prefab selection, rotation, and scale
+- URP low-poly environment assets with simplified collision
 
-## Features / 功能特性
+`Same seed + same parameters + same assets = same procedural world`
 
-### Completed / 已完成
+## Procedural World Generation Pipeline
 
-**English**
+```mermaid
+flowchart TD
+    A[World Seed] --> B[Terrain Generator]
+    B --> C[Seeded Noise Offset]
+    C --> D[Perlin Noise Sampling]
+    D --> E[Grid Vertex Heights]
+    E --> F[Procedural Mesh]
+    F --> G[Mesh Collider]
+    G --> H[Terrain Generated Event]
+    A --> I[Independent Environment Seed]
+    H --> J[Environment Spawner]
+    I --> J
+    J --> K[Candidate Positions]
+    K --> L[Terrain Surface Raycast]
+    L --> M[Slope and Spacing Filters]
+    M --> N[Tree and Rock Prefab Selection]
+    N --> O[Deterministic Environment]
+```
 
-- ✓ Unity project initialization
-- ✓ Player controller system
-- ✓ Third-person camera system
-- ✓ Stylized low-poly environment integration
+See [Procedural Terrain](Documentation/ProceduralTerrain.md) and [Procedural Environment](Documentation/ProceduralEnvironment.md).
 
-**中文**
+## Architecture
 
-- ✓ Unity 工程初始化
-- ✓ 玩家控制系统
-- ✓ 第三人称摄像机系统
-- ✓ 风格化 Low-poly 环境资产集成
-
-### In Progress / 开发中
-
-**English**
-
-- Procedural World Generation
-  - Grid Mesh Foundation ✅
-  - Noise-based Terrain ✅
-  - Seeded World Generation ✅
-  - Procedural Environment Spawning ✅
-  - Low-poly Environment Integration ✅
-  - Procedural World Milestone ⏳
-
-Two tree variants and three rock variants are deterministically selected and placed on the generated terrain from the World Seed.
-
-**中文**
-
-- 程序化世界生成
-  - 规则网格基础 ✅
-  - 噪声地形生成 ✅
-  - 确定性种子世界生成 ✅
-  - 程序化环境物体生成 ✅
-  - Low-poly 环境资产集成 ✅
-  - 程序化世界里程碑 ⏳
-
-系统会根据 World Seed 确定性选择并放置 2 种树木与 3 种岩石 Variant。
-
-## Showcase / 项目展示
-
-![GenesisWorld stylized low-poly procedural environment](Documentation/Images/GenesisWorld_ProceduralEnvironment_01.png)
-
-The screenshot is captured from the real Unity Game View using seed `1001`.
-
-截图来自真实 Unity Game View，使用 World Seed `1001`。
-
-### Planned / 计划功能
-
-**English**
-
-- Procedural world generation
-- AI NPC interaction
-- Shader-based rendering
-- AIGC-assisted asset generation
-
-**中文**
-
-- 程序化世界生成
-- AI NPC 智能交互
-- 基于 Shader 的实时渲染
-- AIGC 辅助游戏资产生成
-
-## Technology Stack / 技术栈
-
-| Category / 类别 | Technology / 技术 |
+| Module | Responsibility |
 |---|---|
-| Game Engine / 游戏引擎 | Unity 2022 LTS |
-| Language / 开发语言 | C# |
-| Rendering / 渲染 | Universal Render Pipeline (URP) |
-| Version Control / 版本管理 | Git & GitHub |
-| Future AI Integration / 后续 AI 集成 | LLM API / Generative AI |
+| `MeshGenerator` | Grid geometry, triangles, UVs, and Perlin height sampling |
+| `TerrainGenerator` | Parameters, seed offset, Mesh lifecycle, MeshCollider, and generation event |
+| `EnvironmentSpawner` | Environment random stream, candidates, raycasts, filters, prefab variants, and regeneration |
+| `PlayerController` | Input, movement, sprint, jump, and gravity |
+| `CameraController` | Third-person follow, orbit, pitch clamp, smoothing, and zoom |
 
-## Current Version / 当前版本
+Terrain construction and environment placement are separate so each owns a clear lifecycle. Local `System.Random` instances provide reproducibility without contaminating `UnityEngine.Random`. See [Architecture](Documentation/Architecture.md).
 
-**Version / 版本：** v0.1.0
+## Controls
 
-**Milestone / 里程碑：**
+| Input | Action |
+|---|---|
+| WASD | Move relative to camera |
+| Shift | Sprint |
+| Space | Jump |
+| Mouse movement | Orbit camera |
+| Mouse wheel | Zoom |
+| Escape | Release cursor |
 
-Core Framework Completed
+## Technology Stack
 
-核心基础框架完成
+- Unity `2022.3.62f3` LTS, C#, Universal Render Pipeline
+- `Mathf.PerlinNoise`, local `System.Random`
+- Git and GitHub
 
-## Development Roadmap / 开发路线
+## Project Structure
 
-### Phase 1 — Core Framework / 核心框架
+```text
+GenesisWorld/
+├── Assets/{Art,Prefabs,Scenes,Scripts,Settings,ThirdParty}/
+├── Documentation/
+├── Packages/
+├── ProjectSettings/
+├── README.md
+└── README.zh-CN.md
+```
 
-Completed / 已完成：
+## Getting Started
 
-- Player Controller / 玩家控制
-- Third-person Camera / 第三人称摄像机
-
-### Phase 2 — Virtual Environment / 虚拟环境
-
-Planned / 计划：
-
-- Procedural World Generation / 程序化世界生成
-
-### Phase 3 — Intelligent Interaction / 智能交互
-
-Planned / 计划：
-
-- AI NPC System / AI NPC 系统
-
-### Phase 4 — Generative Content / 生成式内容
-
-Planned / 计划：
-
-- AIGC Asset Generation / AIGC 游戏资产生成
-
-## Getting Started / 开始使用
-
-### English
-
-1. Install Unity Hub and Unity **2022.3.62f3 LTS**.
-2. Clone this repository and open it through Unity Hub.
-3. Allow Unity Package Manager to restore project dependencies.
+1. Install Unity Hub and Unity `2022.3.62f3` LTS.
+2. Run `git clone https://github.com/451411308-ctrl/GenesisWorld.git`.
+3. Add the folder in Unity Hub and allow packages to restore.
 4. Open `Assets/Scenes/Test_Player_Controller.unity`.
-5. Enter Play Mode. Use WASD to move, Shift to sprint, Space to jump, the mouse to orbit, and the scroll wheel to zoom.
+5. Enter Play Mode.
 
-### 中文
+## Current Milestone
 
-1. 安装 Unity Hub 与 Unity **2022.3.62f3 LTS**。
-2. 克隆本仓库，并通过 Unity Hub 打开工程。
-3. 等待 Unity Package Manager 完成依赖恢复。
-4. 打开 `Assets/Scenes/Test_Player_Controller.unity`。
-5. 进入 Play Mode：使用 WASD 移动、Shift 冲刺、Space 跳跃、鼠标环绕观察，并通过滚轮缩放视角。
+**v0.2.0 — Procedural World Milestone**
 
-## Documentation / 项目文档
+This milestone completes the procedural-world foundation: grid mesh, Perlin terrain, seeded reproducibility, environment placement, and low-poly asset integration. It is a foundation for later rendering, AI NPC, and AIGC work. Read the [milestone report](Documentation/ProceduralWorld_Milestone.md).
 
-- [Architecture / 项目架构](Documentation/Architecture.md)
-- [Project Configuration / 项目配置](Documentation/ProjectConfiguration.md)
-- [Development Log / 开发日志](Documentation/DevelopmentLog.md)
-- [Roadmap / 开发路线](Documentation/Roadmap.md)
-- [Week 1 Milestone / 第一周里程碑](Documentation/Week1_Milestone.md)
-- [Procedural Terrain Foundation / 程序化地形基础](Documentation/ProceduralTerrain.md)
-- [Procedural Environment / 程序化环境生成](Documentation/ProceduralEnvironment.md)
-- [Third-Party Assets / 第三方资源](Documentation/ThirdPartyAssets.md)
+## Development Roadmap
 
-## Credits / 鸣谢
+| Version | Phase | Status |
+|---|---|---|
+| v0.1.0 | Core Framework | ✅ Complete |
+| v0.2.0 | Procedural World | ✅ Complete |
+| v0.3.0 | Rendering & Shader Development | ⏳ Planned |
+| v0.4.0 | AI NPC Interaction | ⏳ Planned |
+| v0.5.0 | AIGC-assisted Content Pipeline | ⏳ Planned |
 
-Selected environment models and textures are from the [Stylized Nature MegaKit](https://quaternius.com/packs/stylizednaturemegakit.html) by Quaternius, released under CC0 1.0. See [Third-Party Assets](Documentation/ThirdPartyAssets.md) for the exact files and modifications.
+Biomes, chunks, infinite terrain, water, advanced shaders, AI NPCs, and runtime AIGC are roadmap items—not current features.
 
-部分环境模型与贴图来自 Quaternius 的 [Stylized Nature MegaKit](https://quaternius.com/packs/stylizednaturemegakit.html)，采用 CC0 1.0 许可。具体文件与修改记录见 [第三方资源文档](Documentation/ThirdPartyAssets.md)。
+## Third-party Assets
+
+The environment uses a curated subset of Quaternius's [Stylized Nature MegaKit](https://quaternius.com/packs/stylizednaturemegakit.html), released under CC0 1.0. See [Third-Party Assets](Documentation/ThirdPartyAssets.md).
+
+## Documentation
+
+- [Architecture](Documentation/Architecture.md) · [Project Configuration](Documentation/ProjectConfiguration.md)
+- [Development Log](Documentation/DevelopmentLog.md) · [Roadmap](Documentation/Roadmap.md)
+- [Week 1 Milestone](Documentation/Week1_Milestone.md) · [Procedural World Milestone](Documentation/ProceduralWorld_Milestone.md)
+- [Procedural Terrain](Documentation/ProceduralTerrain.md) · [Procedural Environment](Documentation/ProceduralEnvironment.md)
+- [Third-Party Assets](Documentation/ThirdPartyAssets.md)
+
+## License and Asset Licensing
+
+No project-wide source-code license has been declared. Third-party assets retain their documented terms; the integrated Quaternius subset is CC0 1.0. The asset license does not imply a source-code license.
