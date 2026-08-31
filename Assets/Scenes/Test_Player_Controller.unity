@@ -266,22 +266,23 @@ MonoBehaviour:
   terrainGenerator: {fileID: 285905982}
   generateOnStart: 1
   treePrefabs:
-  - {fileID: 8949739144470912979, guid: 1b00620d70c046c41a0c62adaa7933d3, type: 3}
-  - {fileID: 4839764362830380943, guid: 1f758d0eb8799094f8955f8d70d54c7a, type: 3}
+  - {fileID: 396461287367168729, guid: 67aafeb0141414344a5f98d544f84579, type: 3}
+  - {fileID: 3789361065127364855, guid: 30a4b357bdcd9b548a71951b8209b745, type: 3}
+  - {fileID: 8120966526103792003, guid: 2c66ffebc04fee34c93b37bc125cef57, type: 3}
   rockPrefabs:
-  - {fileID: 167202623046298454, guid: f1a3d7bb37fb3f34abfcf0e53130cb2a, type: 3}
-  - {fileID: 3552066513190570050, guid: 50d2661e63edaee469bc4862062ccd40, type: 3}
-  - {fileID: 5372849720728269889, guid: 97c1d967ee39da2428b2b4659d372bd4, type: 3}
-  treeCount: 24
-  rockCount: 14
+  - {fileID: 8442109341899945657, guid: 46e28d10f9ff85146b52805bda5ceab3, type: 3}
+  - {fileID: 7949113306965120548, guid: 4b333a87daa99a84989ebd12887a1ce5, type: 3}
+  - {fileID: 3362623608534872321, guid: 8f65746388fcb3d4986edb407a8542d6, type: 3}
+  treeCount: 18
+  rockCount: 12
   spawnMargin: 1
-  minimumSpacing: 1.45
+  minimumSpacing: 1.85
   maxTreeSlope: 30
   maxRockSlope: 45
   centerClearRadius: 2
   maxAttemptsPerObject: 20
-  treeScaleRange: {x: 0.85, y: 1.15}
-  rockScaleRange: {x: 0.75, y: 1.25}
+  treeScaleRange: {x: 0.9, y: 1.12}
+  rockScaleRange: {x: 0.75, y: 1.15}
 --- !u!1001 &377620403
 PrefabInstance:
   m_ObjectHideFlags: 0

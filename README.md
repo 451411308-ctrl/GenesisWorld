@@ -170,3 +170,10 @@ Planned / 计划：
 - [Week 1 Milestone / 第一周里程碑](Documentation/Week1_Milestone.md)
 - [Procedural Terrain Foundation / 程序化地形基础](Documentation/ProceduralTerrain.md)
 - [Procedural Environment / 程序化环境生成](Documentation/ProceduralEnvironment.md)
+- [Third-Party Assets / 第三方资源](Documentation/ThirdPartyAssets.md)
+
+## Credits / 鸣谢
+
+Selected environment models and textures are from the [Stylized Nature MegaKit](https://quaternius.com/packs/stylizednaturemegakit.html) by Quaternius, released under CC0 1.0. See [Third-Party Assets](Documentation/ThirdPartyAssets.md) for the exact files and modifications.
+
+部分环境模型与贴图来自 Quaternius 的 [Stylized Nature MegaKit](https://quaternius.com/packs/stylizednaturemegakit.html)，采用 CC0 1.0 许可。具体文件与修改记录见 [第三方资源文档](Documentation/ThirdPartyAssets.md)。

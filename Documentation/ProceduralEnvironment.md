@@ -110,14 +110,14 @@ The generator stores accepted positions and compares XZ-plane distances before p
 
 | Parameter / 参数 | Default / 默认值 |
 |---|---:|
-| Tree Count / 树木数量 | 24 |
-| Rock Count / 岩石数量 | 14 |
+| Tree Count / 树木数量 | 18 |
+| Rock Count / 岩石数量 | 12 |
 | Spawn Margin / 边界间距 | 1 |
-| Minimum Spacing / 最小间距 | 1.45 |
+| Minimum Spacing / 最小间距 | 1.85 |
 | Tree Max Slope / 树木最大坡度 | 30° |
 | Rock Max Slope / 岩石最大坡度 | 45° |
-| Tree Scale / 树木缩放 | 0.85–1.15 |
-| Rock Scale / 岩石缩放 | 0.75–1.25 |
+| Tree Scale / 树木缩放 | 0.90–1.12 |
+| Rock Scale / 岩石缩放 | 0.75–1.15 |
 | Center Clear Radius / 中心安全半径 | 2 |
 | Max Attempts per Object / 单对象最大尝试次数 | 20 |
 
@@ -135,9 +135,9 @@ EnvironmentSpawner Prefab Array
 Deterministic Runtime Instance
 ```
 
-All final environment assets in Commit 9 are project-created and require no third-party attribution. `TreeLowPoly_A` uses clustered broadleaf crowns, while `TreeLowPoly_B` uses layered conifer silhouettes. Three rock variants differ in aspect ratio, height, and facet layout. Their pivots sit at ground level, root transforms remain identity, and simple trunk/rock colliders avoid unnecessary collision complexity.
+The default scene now uses a curated CC0 subset of Quaternius's Stylized Nature MegaKit: two common-tree silhouettes, one pine, and three medium-rock variants. Project-created Commit 9 assets remain available as lightweight fallbacks. Imported models are wrapped in clean Prefab roots, normalized for the scene scale, given ground-level pivots, URP/Lit materials, and simple colliders.
 
-Commit 9 的正式环境资产均为项目自制，无第三方署名要求。`TreeLowPoly_A` 使用簇状阔叶树冠，`TreeLowPoly_B` 使用分层针叶轮廓；3 种岩石在长宽比、高度与切面布局上形成差异。所有 Pivot 均位于底部，Prefab 根节点保持单位变换，并使用简化的树干/岩石 Collider。
+默认场景现使用从 Quaternius Stylized Nature MegaKit 中筛选的 CC0 子集，包括 2 种阔叶树、1 种松树和 3 种中型岩石。Commit 9 的项目自制资产继续作为轻量 fallback 保留。导入模型由干净的 Prefab Root 包装，经过比例归一化、底部 Pivot 修正、URP/Lit 材质重建和简化 Collider 配置。
 
 ### Mesh, Material, Prefab, Instance / 资产概念
 
@@ -155,6 +155,12 @@ Commit 9 的正式环境资产均为项目自制，无第三方署名要求。`T
 | RockLowPoly_A | 84 | 28 |
 | RockLowPoly_B | 96 | 32 |
 | RockLowPoly_C | 72 | 24 |
+| CommonTree_2 | 8219 | 5648 |
+| CommonTree_4 | 5639 | 4066 |
+| Pine_3 | 5522 | 4964 |
+| Rock_Medium_1 | 351 | 342 |
+| Rock_Medium_2 | 249 | 244 |
+| Rock_Medium_3 | 531 | 522 |
 
 ## Current Limitations / 当前限制
 

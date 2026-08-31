@@ -115,3 +115,13 @@ Integrated presentation-ready, project-created low-poly environment assets into 
 **中文**
 
 将适合项目展示的自制 Low-poly 环境资产接入现有确定性程序化世界生成流程，新增 2 种树木、3 种岩石、统一 URP 材质、底部 Pivot、简化 Collider、场景构图与真实 Unity Game View 展示图；地形生成与 Seed 生成规则保持不变。
+
+#### Environment Art Upgrade / 环境美术升级
+
+**English**
+
+Curated and integrated a minimal CC0 subset of Quaternius's Stylized Nature MegaKit. The update replaces the default lightweight environment presentation with textured tree and rock variants while preserving the project-created assets as fallbacks. License, redistribution, imported files, and modifications are recorded in `Documentation/ThirdPartyAssets.md`.
+
+**中文**
+
+筛选并集成 Quaternius Stylized Nature MegaKit 的最小 CC0 资源子集，以带贴图的树木和岩石 Variant 升级默认环境表现，同时保留项目自制资产作为 fallback。许可证、再分发条件、导入文件和修改内容均记录在 `Documentation/ThirdPartyAssets.md`。
