@@ -77,25 +77,60 @@ Shader 使用 Lambert Diffuse，并乘以 URP 主光颜色、距离衰减和阴�
 
 - 使用 URP `Core.hlsl` 与 `Lighting.hlsl` 的 `UniversalForward` Pass
 - 支持主方向光颜色、方向以及阴影衰减变体
-- 复用 URP Lit 的 `ShadowCaster` 与 `DepthOnly` Pass
+- 自定义 `ShadowCaster` 与 `DepthOnly` Pass 保留透明裁剪轮廓
 - 通过 `ComputeFogFactor` 和 `MixFog` 兼容 Fog
 - 材质参数位于 `UnityPerMaterial` CBUFFER，兼容 SRP Batcher
 
-默认场景仍关闭 Directional Light Shadow，因为当前导入植被在低分辨率下会产生干扰展示的阴影轮廓。Soft Shadow 运行对比已确认 Terrain 能接收阴影，随后恢复原场景默认值。Shader 兼容 Fog，但本 Commit 没有新增 Fog System。
+## 风格化环境 Shader
+
+Commit 12 新增 `GenesisWorld/StylizedEnvironment`，用于程序化生成的树木与岩石。Shader 将各资产的原始 Base Texture 与既有 Tint 相乘，在世界空间计算 `dot(N,L)`，加入少量包裹光后按 `_LightSteps` 量化。默认采用三档明暗，既增强 Low-poly 表面朝向，又不会抹去全部贴图细节。
+
+Low-poly 相邻面也可能拥有不同法线，因此同一光照方向下的 `N·L` 不同，这正是几何切面可读的重要来源。Shader 不直接保留 `0.12、0.35、0.63、0.91` 这类连续 Lambert 结果，而是将它们映射到少量稳定亮度：
+
+```text
+wrapped = saturate((saturate(dot(normalWS, lightDirectionWS)) + LightWrap) / (1 + LightWrap))
+banded = round(wrapped * (LightSteps - 1)) / (LightSteps - 1)
+final = BaseMap × BaseColor × (AmbientStrength + MainLightColor × banded × attenuation)
+```
+
+HLSL 内会将 `LightSteps` 限制为至少 2，避免除零。
+
+树皮、阔叶、针叶与岩石分别使用四个项目自有适配材质。材质直接引用既有 CC0 贴图，不复制或修改第三方源资产。叶片继续启用 `_ALPHATEST_ON` 与 `0.5` Cutoff，因此透明区域会在 Forward、Depth 和 ShadowCaster Pass 中一致剔除。
+
+| 参数 | 默认值 | 作用 |
+|---|---:|---|
+| Base Map | 资产贴图 / White Fallback | 保留美术细节，并兼容无贴图材质 |
+| Base Color | 既有材质 Tint | 与采样贴图相乘 |
+| Light Steps | `3` | 离散漫反射亮度档数 |
+| Ambient Strength | `0.32`（叶片 `0.35`） | 避免背光面全黑 |
+| Light Wrap | `0.20`（叶片 `0.25`） | 提升树冠内部可读性 |
+| Alpha Cutoff | 叶片 `0.50` | 保留植被透明裁剪轮廓 |
+
+环境与地形 Shader 的表面职责不同，但共用同一个主 Directional Light：
+
+- `StylizedTerrain` 面向没有美术贴图集的生成地面，依据高度和坡度决定颜色。
+- `StylizedEnvironment` 保留树木和岩石的原贴图与 Tint，再对其法线加入可调分层光照。
+
+## 阴影记录
+
+Commit 11 在启用 Soft Shadow 时发现锯齿和拉长的植被轮廓，因此当时场景保持无阴影。Commit 12 追踪了运行时 Prefab 与材质 Alpha 设置，新增支持透明裁剪的自定义 ShadowCaster Pass，并在每次切换后等待 URP 重建阴影资源，再比较 None、Hard 与 Soft 三种模式。
+
+同机位运行对比覆盖 2、3、4 档明暗，以及 Hard/Soft Shadow。三档明暗在层次与可读性之间最平衡；测试场景最终选择 Hard Shadow，因为轮廓更符合 Low-poly/Cell 风格。Light Bias 保持 `0.05`、Normal Bias `0.4`、Near Plane `0.2`；High Fidelity 质量档现使用 `2048` 主光阴影贴图、`40` 单位阴影距离与两级 Cascade，替换模板对当前 `20×20` 小场景过高的 `4096` / `150` / 四级配置。Shader 兼容 Fog，但本 Commit 没有新增 Fog System。
 
 ## 运行验证
 
-- Shader Supported：true；8 个公开参数全部存在
+- 两个自定义 Shader 均受支持；四个环境适配材质均保留源贴图
 - 高度范围：`-1.755～2.029`；最大坡度：`28.348°`
 - 树木/岩石：`18/12`
 - 重复生成 Signature：两次均为 `2087925580`
-- 启动后 Player 正常落地，地形碰撞保持有效
+- 六个环境 Prefab 全部使用自定义 Shader，并保留启用的 Collider
+- Player 存在且启动后正常落地，地形碰撞保持有效
 - 未发现 C# 或 Shader 编译错误
 
 ## 当前限制
 
-Shader 使用 `RecalculateNormals` 生成的顶点法线，因此地形仍为平滑着色。当前没有纹理层、Triplanar、Normal Map、附加光源循环、自定义 GI、Cel 分级或地形专用阴影过滤。环境资产继续使用原有 URP 材质。
+地形 Shader 使用 `RecalculateNormals` 生成的顶点法线，因此地形仍为平滑着色。当前渲染层没有地形纹理层、Triplanar、环境 Normal Map、附加光源循环、自定义 GI 或平台专项阴影调优。环境适配层刻意采用直接光/环境光分档，而不是完整 URP Lit PBR 特性集。
 
 ## 后续渲染方向
 
-后续 Commit 可以研究风格化环境光照与可控阴影质量。纹理混合和更高级技术应作为独立、可验证的增量实现。
+后续 Commit 可以研究地形/环境配色统一、远距离可读性与平台专项阴影质量。纹理混合和更高级技术应作为独立、可验证的增量实现。

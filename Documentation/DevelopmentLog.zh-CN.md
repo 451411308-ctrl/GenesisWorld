@@ -43,3 +43,6 @@
 
 ### Commit 11 — `Add stylized terrain shader foundation`
 新增项目首个自定义 URP 地形 Shader，通过世界空间高度、世界空间表面法线、平滑坡度混合、主方向光 Lambert 光照、可调环境亮度、阴影变体与 Fog 兼容，生成可参数化的风格化地形表现。旧地形材质继续作为备用方案保留。
+
+### Commit 12 — `Add stylized environment lighting`
+新增自定义 URP 环境 Shader，支持可调明暗分层、包裹式漫反射、环境补光、原贴图与颜色保留、植被透明裁剪，以及兼容透明裁剪的深度/阴影 Pass。项目自有适配材质覆盖全部已集成树木与岩石 Prefab，同时不修改 CC0 源资源。经同机位硬/软阴影运行对比后，最终采用硬方向光阴影。

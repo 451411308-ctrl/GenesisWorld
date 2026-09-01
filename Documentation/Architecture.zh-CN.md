@@ -17,14 +17,15 @@ Unity Engine + URP
     ├── TerrainGenerator ── Mesh 生命周期与地形事件
     └── EnvironmentSpawner ── 确定性的表面放置
 └── 渲染层 [进行中]
-    └── StylizedTerrain ── 高度/坡度颜色与方向光照
+    ├── StylizedTerrain ── 高度/坡度颜色与方向光照
+    └── StylizedEnvironment ── 保留贴图的明暗分层与透明裁剪阴影
 ```
 
 地形生成与环境放置相互分离：地形负责几何与碰撞，Spawner 等待 `TerrainGenerated` 并只管理自己的生成层级。局部 `System.Random` 保证结果可复现，同时不改变 Unity 全局随机状态。
 
 ## 未来层级
 
-- 渲染与 Shader 开发已经开始。`StylizedTerrain` 是首个已实现的自定义 URP Shader，但完整渲染层尚未完成。
+- 渲染与 Shader 开发已经开始。`StylizedTerrain` 负责生成地面，`StylizedEnvironment` 将统一光照方向应用到带贴图的树木和岩石 Prefab；完整渲染层尚未完成。
 - AI Interaction 未来会隔离 NPC 上下文、决策、调度与服务商适配。
 - AIGC Content 将作为编辑器/离线生产流程，其输出必须经过审核和优化。
 

@@ -18,6 +18,10 @@ Real Unity Game View capture using world seed `1001`.
 
 Commit 11 begins the rendering phase with a real Game View capture of the custom terrain Shader using seed `12345`.
 
+![GenesisWorld stylized environment lighting with banded trees, rocks, and hard shadows](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
+
+Commit 12 extends the same visual language to environment assets while preserving their source textures and alpha-clipped foliage.
+
 ## Overview
 
 GenesisWorld is an open-source Unity project for digital media technology study, portfolio presentation, and research-oriented experimentation. It emphasizes modular responsibilities, reproducible generation, documented asset provenance, and incremental milestones.
@@ -34,6 +38,7 @@ GenesisWorld is an open-source Unity project for digital media technology study,
 - Seeded prefab selection, rotation, and scale
 - URP low-poly environment assets with simplified collision
 - Stylized terrain shading driven by world height, surface slope, and main directional light
+- Stylized environment lighting with configurable light bands, texture-preserving color tint, alpha clipping, and hard shadows
 
 `Same seed + same parameters + same assets = same procedural world`
 
@@ -70,6 +75,7 @@ See [Procedural Terrain](Documentation/ProceduralTerrain.md) and [Procedural Env
 | `PlayerController` | Input, movement, sprint, jump, and gravity |
 | `CameraController` | Third-person follow, orbit, pitch clamp, smoothing, and zoom |
 | `StylizedTerrain` | GPU height/slope color blending and lightweight directional lighting |
+| `StylizedEnvironment` | Texture-preserving banded lighting and alpha-aware environment shadows |
 
 Terrain construction and environment placement are separate so each owns a clear lifecycle. Local `System.Random` instances provide reproducibility without contaminating `UnityEngine.Random`. See [Architecture](Documentation/Architecture.md).
 

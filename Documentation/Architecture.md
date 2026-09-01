@@ -17,14 +17,15 @@ Unity Engine + URP
     ├── TerrainGenerator ── Mesh lifecycle and terrain event
     └── EnvironmentSpawner ── deterministic surface placement
 └── Rendering Layer [In Progress]
-    └── StylizedTerrain ── height/slope color and directional lighting
+    ├── StylizedTerrain ── height/slope color and directional lighting
+    └── StylizedEnvironment ── texture-preserving light bands and alpha-aware shadows
 ```
 
 Terrain generation and environment placement are separate: the terrain owns geometry and collision; the spawner waits for `TerrainGenerated` and owns only its generated hierarchy. Local `System.Random` streams make results reproducible without changing global Unity randomness.
 
 ## Future Layers
 
-- Rendering and Shader development is in progress. `StylizedTerrain` is the first implemented custom URP Shader; a complete rendering layer is not yet finished.
+- Rendering and Shader development is in progress. `StylizedTerrain` handles generated ground, while `StylizedEnvironment` applies the shared lighting direction to textured tree and rock Prefabs. A complete rendering layer is not yet finished.
 - AI Interaction will later isolate NPC context, decisions, scheduling, and provider adapters.
 - AIGC Content will be an editor/offline workflow whose outputs require review and optimization.
 

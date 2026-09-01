@@ -43,3 +43,6 @@ Separated public documentation into English and Simplified Chinese files, redesi
 
 ### Commit 11 — `Add stylized terrain shader foundation`
 Introduced the first custom URP terrain Shader. It uses world-space height, world-space surface normals, smooth slope blending, main directional Lambert lighting, adjustable ambient strength, shadow variants, and Fog compatibility to create a parameterized stylized terrain appearance. The original terrain material remains available as a fallback.
+
+### Commit 12 — `Add stylized environment lighting`
+Added a custom URP environment Shader with configurable light bands, wrapped diffuse response, ambient fill, source-texture and color preservation, alpha-clipped foliage, and alpha-aware depth/shadow passes. Project-owned adapter materials now style all integrated tree and rock Prefabs without modifying the CC0 source assets. Hard directional shadows were selected after same-camera hard/soft runtime comparison.

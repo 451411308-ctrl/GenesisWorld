@@ -18,6 +18,10 @@ GenesisWorld 探索程序化生成、实时渲染与后续生成式 AI 系统如
 
 Commit 11 使用 Seed `12345` 的真实 Game View 截图，正式开始渲染开发阶段。
 
+![使用分层树木、岩石与硬阴影的 GenesisWorld 风格化环境光照](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
+
+Commit 12 将统一的风格化光照语言扩展到环境资产，同时保留原始贴图与植被 Alpha Clipping。
+
 ## 项目概述
 
 GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索的 Unity 开源项目，强调模块职责清晰、生成结果可复现、资产来源可追溯，以及按里程碑持续迭代。
@@ -34,6 +38,7 @@ GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索�
 - 确定性的 Prefab 选择、旋转与缩放
 - 使用 URP 材质和简化碰撞体的 Low-poly 环境资产
 - 基于世界高度、表面坡度与主方向光的风格化地形 Shader
+- 支持可调明暗分层、原贴图颜色、透明裁剪与硬阴影的风格化环境光照
 
 `相同种子 + 相同参数 + 相同资产 = 相同程序化世界`
 
@@ -70,6 +75,7 @@ flowchart TD
 | `PlayerController` | 输入、移动、冲刺、跳跃与重力 |
 | `CameraController` | 第三人称跟随、环绕、俯仰限制、平滑与缩放 |
 | `StylizedTerrain` | GPU 高度/坡度颜色混合与轻量方向光照 |
+| `StylizedEnvironment` | 保留贴图的分层光照与支持透明裁剪的环境阴影 |
 
 地形构建与环境放置相互分离，使两个系统拥有清晰的生命周期。局部 `System.Random` 保证结果可复现，同时不影响 `UnityEngine.Random`。详见[架构文档](Documentation/Architecture.zh-CN.md)。
 
