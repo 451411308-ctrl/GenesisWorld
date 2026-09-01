@@ -12,17 +12,19 @@ GenesisWorld uses explicit references and narrow responsibilities to keep gamepl
 Unity Engine + URP
 ├── PlayerController ── updates player motion
 ├── CameraController ── observes CameraTarget
-└── Procedural World
+├── Procedural World
     ├── MeshGenerator ── grid data and noise heights
     ├── TerrainGenerator ── Mesh lifecycle and terrain event
     └── EnvironmentSpawner ── deterministic surface placement
+└── Rendering Layer [In Progress]
+    └── StylizedTerrain ── height/slope color and directional lighting
 ```
 
 Terrain generation and environment placement are separate: the terrain owns geometry and collision; the spawner waits for `TerrainGenerated` and owns only its generated hierarchy. Local `System.Random` streams make results reproducible without changing global Unity randomness.
 
 ## Future Layers
 
-- Rendering and Shader development will extend the existing URP foundation.
+- Rendering and Shader development is in progress. `StylizedTerrain` is the first implemented custom URP Shader; a complete rendering layer is not yet finished.
 - AI Interaction will later isolate NPC context, decisions, scheduling, and provider adapters.
 - AIGC Content will be an editor/offline workflow whose outputs require review and optimization.
 

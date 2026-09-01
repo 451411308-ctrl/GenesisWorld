@@ -38,3 +38,8 @@ Integrated a minimal CC0 subset of Quaternius's Stylized Nature MegaKit, rebuilt
 
 ### Commit 10 — `Update procedural world documentation and milestone`
 Separated public documentation into English and Simplified Chinese files, redesigned the GitHub landing page, documented the complete pipeline, and prepared the `v0.2.0` Procedural World milestone.
+
+## Week 3 — Rendering and Shaders
+
+### Commit 11 — `Add stylized terrain shader foundation`
+Introduced the first custom URP terrain Shader. It uses world-space height, world-space surface normals, smooth slope blending, main directional Lambert lighting, adjustable ambient strength, shadow variants, and Fog compatibility to create a parameterized stylized terrain appearance. The original terrain material remains available as a fallback.

@@ -12,17 +12,19 @@ GenesisWorld 通过显式引用和单一职责，让游戏逻辑、程序化算�
 Unity Engine + URP
 ├── PlayerController ── 更新玩家运动
 ├── CameraController ── 观察 CameraTarget
-└── 程序化世界
+├── 程序化世界
     ├── MeshGenerator ── 规则网格数据与噪声高度
     ├── TerrainGenerator ── Mesh 生命周期与地形事件
     └── EnvironmentSpawner ── 确定性的表面放置
+└── 渲染层 [进行中]
+    └── StylizedTerrain ── 高度/坡度颜色与方向光照
 ```
 
 地形生成与环境放置相互分离：地形负责几何与碰撞，Spawner 等待 `TerrainGenerated` 并只管理自己的生成层级。局部 `System.Random` 保证结果可复现，同时不改变 Unity 全局随机状态。
 
 ## 未来层级
 
-- 渲染与 Shader 开发将在现有 URP 基础上扩展。
+- 渲染与 Shader 开发已经开始。`StylizedTerrain` 是首个已实现的自定义 URP Shader，但完整渲染层尚未完成。
 - AI Interaction 未来会隔离 NPC 上下文、决策、调度与服务商适配。
 - AIGC Content 将作为编辑器/离线生产流程，其输出必须经过审核和优化。
 

@@ -38,3 +38,8 @@
 
 ### Commit 10 — `Update procedural world documentation and milestone`
 将公开文档拆分为英文与简体中文文件，重构 GitHub 项目主页，整理完整程序化流程，并准备 `v0.2.0` 程序化世界里程碑。
+
+## 第三周 — 渲染与 Shader
+
+### Commit 11 — `Add stylized terrain shader foundation`
+新增项目首个自定义 URP 地形 Shader，通过世界空间高度、世界空间表面法线、平滑坡度混合、主方向光 Lambert 光照、可调环境亮度、阴影变体与 Fog 兼容，生成可参数化的风格化地形表现。旧地形材质继续作为备用方案保留。

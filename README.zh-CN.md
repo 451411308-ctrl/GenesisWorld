@@ -14,6 +14,10 @@ GenesisWorld 探索程序化生成、实时渲染与后续生成式 AI 系统如
 
 图片来自真实 Unity Game View，World Seed 为 `1001`。
 
+![基于高度、坡度与方向光照的 GenesisWorld 风格化地形 Shader](Documentation/Images/GenesisWorld_StylizedTerrain_01.png)
+
+Commit 11 使用 Seed `12345` 的真实 Game View 截图，正式开始渲染开发阶段。
+
 ## 项目概述
 
 GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索的 Unity 开源项目，强调模块职责清晰、生成结果可复现、资产来源可追溯，以及按里程碑持续迭代。
@@ -29,6 +33,7 @@ GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索�
 - 基于 Raycast、坡度限制和最小间距的树木与岩石生成
 - 确定性的 Prefab 选择、旋转与缩放
 - 使用 URP 材质和简化碰撞体的 Low-poly 环境资产
+- 基于世界高度、表面坡度与主方向光的风格化地形 Shader
 
 `相同种子 + 相同参数 + 相同资产 = 相同程序化世界`
 
@@ -64,6 +69,7 @@ flowchart TD
 | `EnvironmentSpawner` | 环境随机流、候选点、射线检测、过滤、Prefab Variant 与重新生成 |
 | `PlayerController` | 输入、移动、冲刺、跳跃与重力 |
 | `CameraController` | 第三人称跟随、环绕、俯仰限制、平滑与缩放 |
+| `StylizedTerrain` | GPU 高度/坡度颜色混合与轻量方向光照 |
 
 地形构建与环境放置相互分离，使两个系统拥有清晰的生命周期。局部 `System.Random` 保证结果可复现，同时不影响 `UnityEngine.Random`。详见[架构文档](Documentation/Architecture.zh-CN.md)。
 
@@ -116,7 +122,7 @@ GenesisWorld/
 |---|---|---|
 | v0.1.0 | 核心框架 | ✅ 已完成 |
 | v0.2.0 | 程序化世界 | ✅ 已完成 |
-| v0.3.0 | 渲染与 Shader 开发 | ⏳ 计划中 |
+| v0.3.0 | 渲染与 Shader 开发 | 🚧 进行中 |
 | v0.4.0 | AI NPC 交互 | ⏳ 计划中 |
 | v0.5.0 | AIGC 辅助内容流程 | ⏳ 计划中 |
 
@@ -132,6 +138,7 @@ Biome、Chunk、无限地形、水体、高级 Shader、AI NPC 与运行时 AIGC
 - [开发日志](Documentation/DevelopmentLog.zh-CN.md) · [开发路线](Documentation/Roadmap.zh-CN.md)
 - [第一周里程碑](Documentation/Week1_Milestone.zh-CN.md) · [程序化世界里程碑](Documentation/ProceduralWorld_Milestone.zh-CN.md)
 - [程序化地形](Documentation/ProceduralTerrain.zh-CN.md) · [程序化环境](Documentation/ProceduralEnvironment.zh-CN.md)
+- [渲染与 Shader](Documentation/RenderingAndShaders.zh-CN.md)
 - [第三方资源](Documentation/ThirdPartyAssets.zh-CN.md)
 
 ## 许可证与资产声明

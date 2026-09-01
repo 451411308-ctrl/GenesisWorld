@@ -14,6 +14,10 @@ GenesisWorld explores how procedural generation, real-time rendering, and future
 
 Real Unity Game View capture using world seed `1001`.
 
+![GenesisWorld stylized terrain shader using height, slope, and directional lighting](Documentation/Images/GenesisWorld_StylizedTerrain_01.png)
+
+Commit 11 begins the rendering phase with a real Game View capture of the custom terrain Shader using seed `12345`.
+
 ## Overview
 
 GenesisWorld is an open-source Unity project for digital media technology study, portfolio presentation, and research-oriented experimentation. It emphasizes modular responsibilities, reproducible generation, documented asset provenance, and incremental milestones.
@@ -29,6 +33,7 @@ GenesisWorld is an open-source Unity project for digital media technology study,
 - Deterministic tree and rock spawning using raycasts, slope limits, and spacing
 - Seeded prefab selection, rotation, and scale
 - URP low-poly environment assets with simplified collision
+- Stylized terrain shading driven by world height, surface slope, and main directional light
 
 `Same seed + same parameters + same assets = same procedural world`
 
@@ -64,6 +69,7 @@ See [Procedural Terrain](Documentation/ProceduralTerrain.md) and [Procedural Env
 | `EnvironmentSpawner` | Environment random stream, candidates, raycasts, filters, prefab variants, and regeneration |
 | `PlayerController` | Input, movement, sprint, jump, and gravity |
 | `CameraController` | Third-person follow, orbit, pitch clamp, smoothing, and zoom |
+| `StylizedTerrain` | GPU height/slope color blending and lightweight directional lighting |
 
 Terrain construction and environment placement are separate so each owns a clear lifecycle. Local `System.Random` instances provide reproducibility without contaminating `UnityEngine.Random`. See [Architecture](Documentation/Architecture.md).
 
@@ -116,7 +122,7 @@ This milestone completes the procedural-world foundation: grid mesh, Perlin terr
 |---|---|---|
 | v0.1.0 | Core Framework | ✅ Complete |
 | v0.2.0 | Procedural World | ✅ Complete |
-| v0.3.0 | Rendering & Shader Development | ⏳ Planned |
+| v0.3.0 | Rendering & Shader Development | 🚧 In Progress |
 | v0.4.0 | AI NPC Interaction | ⏳ Planned |
 | v0.5.0 | AIGC-assisted Content Pipeline | ⏳ Planned |
 
@@ -132,6 +138,7 @@ The environment uses a curated subset of Quaternius's [Stylized Nature MegaKit](
 - [Development Log](Documentation/DevelopmentLog.md) · [Roadmap](Documentation/Roadmap.md)
 - [Week 1 Milestone](Documentation/Week1_Milestone.md) · [Procedural World Milestone](Documentation/ProceduralWorld_Milestone.md)
 - [Procedural Terrain](Documentation/ProceduralTerrain.md) · [Procedural Environment](Documentation/ProceduralEnvironment.md)
+- [Rendering and Shaders](Documentation/RenderingAndShaders.md)
 - [Third-Party Assets](Documentation/ThirdPartyAssets.md)
 
 ## License and Asset Licensing
