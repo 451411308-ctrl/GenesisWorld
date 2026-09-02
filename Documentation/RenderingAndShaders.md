@@ -115,7 +115,78 @@ The environment and terrain Shaders have different surface responsibilities but 
 
 Commit 11 found jagged, elongated foliage silhouettes when Soft Shadows were enabled, so that scene remained shadowless. Commit 12 traced the runtime Prefabs and material alpha settings, added an alpha-aware custom ShadowCaster pass, and compared None, Hard, and Soft modes after allowing URP to rebuild its shadow resources between captures.
 
-Same-camera runtime comparisons covered two, three, and four light steps plus hard and soft shadows. Three light steps provided the clearest balance. Hard shadows were selected for the test scene because their silhouettes match the low-poly/cel presentation better; light bias remains `0.05`, normal bias `0.4`, near plane `0.2`, and the High Fidelity quality profile now uses a `2048` main-light shadow map, `40`-unit distance, and two cascades. These values replace the template's excessive `4096` / `150` / four-cascade settings for this compact `20×20` scene. Fog compatibility exists, but the scene does not enable a new fog system.
+Same-camera runtime comparisons covered two, three, and four light steps plus hard and soft shadows. Three light steps provided the clearest balance. Hard shadows were selected for the test scene because their silhouettes match the low-poly/cel presentation better; light bias remains `0.05`, normal bias `0.4`, near plane `0.2`, and the High Fidelity quality profile now uses a `2048` main-light shadow map, `40`-unit distance, and two cascades. These values replace the template's excessive `4096` / `150` / four-cascade settings for this compact `20×20` scene. Commit 13 now uses the existing Fog compatibility as described below.
+
+## Atmospheric Rendering
+
+Commit 13 connects the terrain and environment Shaders to an authored atmosphere rather than adding another surface effect. The final direction is a clear stylized day: cool blue zenith, pale blue-green horizon, restrained linear distance fog, slightly warm sunlight, and the existing hard-shadow language. No Volume, HDRI, physical scattering, clouds, or ray marching was added.
+
+The atmosphere pipeline is intentionally small:
+
+```text
+Camera view direction → StylizedSkybox gradient
+Object camera distance → Unity linear fog factor
+Terrain / Environment / Player color → MixFog toward horizon color
+Warm Directional Light + hard shadows → local form and contact
+```
+
+## Stylized Skybox
+
+`GenesisWorld/StylizedSkybox` is a hand-written URP Shader with four material parameters:
+
+| Property | Final value | Purpose |
+|---|---:|---|
+| Zenith Color | `(0.18, 0.42, 0.72)` | Cool upper-sky color |
+| Horizon Color | `(0.72, 0.84, 0.82)` | Pale atmospheric transition and fog target |
+| Lower Color | `(0.32, 0.38, 0.28)` | Natural lower hemisphere when the terrain edge is visible |
+| Horizon Exponent | `0.65` | Controls the width and softness of the horizon transition |
+
+## View Direction
+
+A skybox does not need a world-space location for every visible sky pixel. It needs the direction in which the camera is looking. The vertex stage transforms the skybox cube direction to world space; the fragment stage normalizes it and reads `viewDirection.y`.
+
+- Positive Y points toward the zenith.
+- Values near zero point toward the horizon.
+- Negative Y points into the lower hemisphere.
+
+## Horizon Gradient
+
+The Shader uses `smoothstep` followed by `pow` rather than a mechanical linear ramp:
+
+```text
+upper = pow(smoothstep(0, 1, saturate(viewDirection.y)), HorizonExponent)
+lower = pow(smoothstep(0, 1, saturate(-viewDirection.y)), HorizonExponent)
+upperSky = lerp(HorizonColor, ZenithColor, upper)
+lowerSky = lerp(HorizonColor, LowerColor, lower)
+```
+
+The two gradients meet at the same Horizon Color, avoiding a visible seam. Full `float` precision is used for the direction and factors; runtime inspection found no pink sky, black sky, seam, or distracting banding.
+
+## Fog
+
+The scene now uses Unity Linear Fog with Start `12` and End `40`. Fog is not a transparent grey plane: each compatible Shader calculates a camera-distance Fog Factor and mixes its surface result toward the configured Fog Color.
+
+```text
+FinalColor = lerp(ObjectColor, FogColor, FogFactor)
+```
+
+Runtime comparison covered Fog Off, `12–40`, and `10–32`. Fog Off separated distant geometry from the horizon; `10–32` washed out too much of the compact world; `12–40` retained tree/rock color while still providing atmospheric depth. Terrain, bark, alpha-clipped leaves, rocks, shadows, and the Player all remained visually valid.
+
+## Fog and Horizon Matching
+
+Fog Color exactly matches the material Horizon Color: `(0.72, 0.84, 0.82)`. Distant surfaces therefore approach the same color already behind them instead of producing a grey or blue discontinuity. This depth cue makes the small procedural world read as a coherent space without pretending it is infinite.
+
+## Directional Light Polish
+
+Two light directions were compared. A new `42°, -55°, 0°` side angle strengthened facets but produced overly dark foreground foliage and longer shadows. The existing `48°, -32°, 0°` direction gave the better balance, so rotation, warm color `(1.00, 0.94, 0.84)`, and intensity `1.15` remain unchanged. Skybox Ambient mode and intensity `1.0` also remain unchanged; custom terrain/environment materials retain their `0.32–0.35` ambient terms so back faces stay readable without flattening the lit bands.
+
+## Shadow Distance
+
+Commit 12's stable configuration is preserved: Hard Shadows, `2048` main-light shadow map, `40` distance, two cascades, Bias `0.05`, Normal Bias `0.4`, and Near Plane `0.2`. Shadow Distance now matches Fog End, avoiding work on shadows that would be hidden beyond the atmospheric range. Trees, rocks, terrain, and Player remained free of the earlier elongated foliage artifact.
+
+## Atmosphere Pipeline
+
+The final atmosphere is scene configuration plus one sky Shader—not a new runtime manager. It remains independent from `MeshGenerator`, `TerrainGenerator`, `EnvironmentSpawner`, Player, Camera, and World Seed. Same-seed regeneration retained signature `2087925580` with `18` trees and `12` rocks.
 
 ## Runtime Validation
 
@@ -126,10 +197,12 @@ Same-camera runtime comparisons covered two, three, and four light steps plus ha
 - All six environment Prefabs use the custom Shader and retain enabled colliders
 - Player present and grounded after startup; terrain collision remained active
 - No C# or Shader compilation errors were found
+- Fog Off / `12–40` / `10–32`, two palettes, two light angles, and ground/elevated/horizon views were compared in Play Mode
+- Final skybox assigned through RenderSettings; Camera remained in Skybox clear mode
 
 ## Current Limitations
 
-The terrain Shader uses vertex normals generated by `RecalculateNormals`, so the terrain remains smoothly shaded. The rendering layer has no terrain texture layers, triplanar mapping, environment normal maps, additional-light loop, custom GI, or platform-specific shadow tuning. The environment adapter deliberately implements direct/ambient banding rather than the full URP Lit PBR feature set.
+The terrain Shader uses vertex normals generated by `RecalculateNormals`, so the terrain remains smoothly shaded. The rendering layer has no terrain texture layers, triplanar mapping, environment normal maps, additional-light loop, physical atmospheric scattering, volumetric fog, clouds, post-processing Volume, custom GI, or platform-specific shadow tuning. The environment adapter deliberately implements direct/ambient banding rather than the full URP Lit PBR feature set.
 
 ## Next Rendering Steps
 

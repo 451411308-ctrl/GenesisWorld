@@ -115,7 +115,78 @@ HLSL 内会将 `LightSteps` 限制为至少 2，避免除零。
 
 Commit 11 在启用 Soft Shadow 时发现锯齿和拉长的植被轮廓，因此当时场景保持无阴影。Commit 12 追踪了运行时 Prefab 与材质 Alpha 设置，新增支持透明裁剪的自定义 ShadowCaster Pass，并在每次切换后等待 URP 重建阴影资源，再比较 None、Hard 与 Soft 三种模式。
 
-同机位运行对比覆盖 2、3、4 档明暗，以及 Hard/Soft Shadow。三档明暗在层次与可读性之间最平衡；测试场景最终选择 Hard Shadow，因为轮廓更符合 Low-poly/Cell 风格。Light Bias 保持 `0.05`、Normal Bias `0.4`、Near Plane `0.2`；High Fidelity 质量档现使用 `2048` 主光阴影贴图、`40` 单位阴影距离与两级 Cascade，替换模板对当前 `20×20` 小场景过高的 `4096` / `150` / 四级配置。Shader 兼容 Fog，但本 Commit 没有新增 Fog System。
+同机位运行对比覆盖 2、3、4 档明暗，以及 Hard/Soft Shadow。三档明暗在层次与可读性之间最平衡；测试场景最终选择 Hard Shadow，因为轮廓更符合 Low-poly/Cell 风格。Light Bias 保持 `0.05`、Normal Bias `0.4`、Near Plane `0.2`；High Fidelity 质量档现使用 `2048` 主光阴影贴图、`40` 单位阴影距离与两级 Cascade，替换模板对当前 `20×20` 小场景过高的 `4096` / `150` / 四级配置。Commit 13 开始实际使用已有 Fog 兼容能力，具体如下。
+
+## 大气渲染
+
+Commit 13 将地形与环境 Shader 放进明确设计的大气环境，而不是继续增加表面效果。最终方向为清爽风格化日间：冷蓝天顶、浅蓝绿色地平线、克制的线性距离雾、微暖日光，以及既有硬阴影语言。本次没有加入 Volume、HDRI、物理散射、云或 Ray Marching。
+
+大气流程保持轻量：
+
+```text
+相机观察方向 → StylizedSkybox 渐变
+物体到相机距离 → Unity Linear Fog Factor
+Terrain / Environment / Player 颜色 → MixFog 混合到地平线色
+暖 Directional Light + Hard Shadow → 局部形体与接触关系
+```
+
+## 风格化天空
+
+`GenesisWorld/StylizedSkybox` 是手写 URP Shader，仅包含四个材质参数：
+
+| 参数 | 最终值 | 作用 |
+|---|---:|---|
+| Zenith Color | `(0.18, 0.42, 0.72)` | 冷色上层天空 |
+| Horizon Color | `(0.72, 0.84, 0.82)` | 浅色大气过渡与雾目标色 |
+| Lower Color | `(0.32, 0.38, 0.28)` | 地形边缘可见时的自然下半球颜色 |
+| Horizon Exponent | `0.65` | 控制地平线过渡宽度与柔和程度 |
+
+## 观察方向
+
+Skybox 不需要知道每个天空 Pixel 的世界坐标，主要需要相机正在观察的方向。Vertex Stage 将天空盒立方体方向转换到世界空间；Fragment Stage 将其归一化并读取 `viewDirection.y`。
+
+- 正 Y 指向 Zenith。
+- 接近 0 指向 Horizon。
+- 负 Y 指向下半球。
+
+## 地平线渐变
+
+Shader 使用 `smoothstep` 再接 `pow`，而不是机械线性渐变：
+
+```text
+upper = pow(smoothstep(0, 1, saturate(viewDirection.y)), HorizonExponent)
+lower = pow(smoothstep(0, 1, saturate(-viewDirection.y)), HorizonExponent)
+upperSky = lerp(HorizonColor, ZenithColor, upper)
+lowerSky = lerp(HorizonColor, LowerColor, lower)
+```
+
+上下渐变在同一个 Horizon Color 汇合，因此不会形成接缝。方向与渐变因子使用完整 `float` 精度；运行检查未发现粉色天空、黑色天空、接缝或明显色带。
+
+## 雾
+
+场景现使用 Unity Linear Fog，Start 为 `12`，End 为 `40`。Fog 不是放在世界中的一层灰色透明平面；兼容 Shader 会依据相机距离计算 Fog Factor，再将表面结果混合到 Fog Color。
+
+```text
+FinalColor = lerp(ObjectColor, FogColor, FogFactor)
+```
+
+运行对比覆盖 Fog Off、`12–40` 与 `10–32`。关闭 Fog 时远景与地平线分离；`10–32` 对紧凑世界的淡化过强；`12–40` 在保留树木/岩石颜色的同时提供了大气深度。Terrain、树皮、Alpha Clip 叶片、岩石、阴影与 Player 均保持正常。
+
+## 雾与地平线匹配
+
+Fog Color 与材质 Horizon Color 完全一致：`(0.72, 0.84, 0.82)`。远处表面会逐渐靠近其背景色，不会出现灰色或蓝色断层。这种深度线索能让小型程序化世界形成统一空间感，但不会伪装成无限世界。
+
+## 方向光调整
+
+实际比较了两组光照方向。新的 `42°, -55°, 0°` 侧向角度强化了切面，但前景植被过暗且阴影过长；既有 `48°, -32°, 0°` 更均衡，因此 Rotation、暖色 `(1.00, 0.94, 0.84)` 与强度 `1.15` 均保持不变。Skybox Ambient Mode 与强度 `1.0` 也不变；自定义地形/环境材质继续使用 `0.32–0.35` Ambient，保证背光面可读但不抹平明暗分档。
+
+## 阴影距离
+
+保留 Commit 12 的稳定配置：Hard Shadow、`2048` 主光阴影贴图、`40` 距离、两级 Cascade、Bias `0.05`、Normal Bias `0.4`、Near Plane `0.2`。Shadow Distance 与 Fog End 现在一致，避免计算大气范围之外不可见的阴影。树木、岩石、地形和 Player 均未再出现早期植被拉长伪影。
+
+## 大气渲染流程
+
+最终大气只由场景配置和一个天空 Shader 组成，没有新增运行时 Manager。它与 `MeshGenerator`、`TerrainGenerator`、`EnvironmentSpawner`、Player、Camera 和 World Seed 保持独立。同 Seed 重生成仍得到签名 `2087925580`、`18` 棵树与 `12` 块岩石。
 
 ## 运行验证
 
@@ -126,10 +197,12 @@ Commit 11 在启用 Soft Shadow 时发现锯齿和拉长的植被轮廓，因此
 - 六个环境 Prefab 全部使用自定义 Shader，并保留启用的 Collider
 - Player 存在且启动后正常落地，地形碰撞保持有效
 - 未发现 C# 或 Shader 编译错误
+- 已在 Play Mode 对比 Fog Off / `12–40` / `10–32`、两套 Palette、两种光照角度与地面/高处/地平线视角
+- 最终天空通过 RenderSettings 绑定；Camera 继续使用 Skybox Clear Mode
 
 ## 当前限制
 
-地形 Shader 使用 `RecalculateNormals` 生成的顶点法线，因此地形仍为平滑着色。当前渲染层没有地形纹理层、Triplanar、环境 Normal Map、附加光源循环、自定义 GI 或平台专项阴影调优。环境适配层刻意采用直接光/环境光分档，而不是完整 URP Lit PBR 特性集。
+地形 Shader 使用 `RecalculateNormals` 生成的顶点法线，因此地形仍为平滑着色。当前渲染层没有地形纹理层、Triplanar、环境 Normal Map、附加光源循环、物理大气散射、体积雾、云、后处理 Volume、自定义 GI 或平台专项阴影调优。环境适配层刻意采用直接光/环境光分档，而不是完整 URP Lit PBR 特性集。
 
 ## 后续渲染方向
 

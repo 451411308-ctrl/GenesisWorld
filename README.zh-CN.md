@@ -10,17 +10,19 @@ GenesisWorld 探索程序化生成、实时渲染与后续生成式 AI 系统如
 
 ## 项目展示
 
-![使用种子 1001 生成的 GenesisWorld 程序化环境](Documentation/Images/GenesisWorld_ProceduralEnvironment_01.png)
+![拥有协调天空、雾、光照与阴影的 GenesisWorld 风格化程序化世界](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
 
-图片来自真实 Unity Game View，World Seed 为 `1001`。
+地面附近真实 Unity Game View，Seed 为 `12345`，使用自定义渐变天空、线性雾与硬方向光阴影。
 
-![基于高度、坡度与方向光照的 GenesisWorld 风格化地形 Shader](Documentation/Images/GenesisWorld_StylizedTerrain_01.png)
+![展示程序化分布与距离层次的 GenesisWorld 大气概览](Documentation/Images/GenesisWorld_Atmosphere_Overview_01.png)
 
-Commit 11 使用 Seed `12345` 的真实 Game View 截图，正式开始渲染开发阶段。
+同一个确定性世界的高处运行视角；远处地形、树木与岩石逐渐混合到共享地平线/雾色。
+
+### 渲染开发过程
 
 ![使用分层树木、岩石与硬阴影的 GenesisWorld 风格化环境光照](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
 
-Commit 12 将统一的风格化光照语言扩展到环境资产，同时保留原始贴图与植被 Alpha Clipping。
+Commit 11 建立地形着色，Commit 12 将光照语言扩展到环境资产，Commit 13 再通过天空、雾、光照与构图统一两者。更早截图继续保留在 `Documentation/Images/`。
 
 ## 项目概述
 
@@ -39,6 +41,7 @@ GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索�
 - 使用 URP 材质和简化碰撞体的 Low-poly 环境资产
 - 基于世界高度、表面坡度与主方向光的风格化地形 Shader
 - 支持可调明暗分层、原贴图颜色、透明裁剪与硬阴影的风格化环境光照
+- 自定义渐变天空与匹配场景尺度的线性雾，并统一地平线颜色
 
 `相同种子 + 相同参数 + 相同资产 = 相同程序化世界`
 
@@ -76,6 +79,7 @@ flowchart TD
 | `CameraController` | 第三人称跟随、环绕、俯仰限制、平滑与缩放 |
 | `StylizedTerrain` | GPU 高度/坡度颜色混合与轻量方向光照 |
 | `StylizedEnvironment` | 保留贴图的分层光照与支持透明裁剪的环境阴影 |
+| `StylizedSkybox` | 基于观察方向的渐变天空与协调大气地平线 |
 
 地形构建与环境放置相互分离，使两个系统拥有清晰的生命周期。局部 `System.Random` 保证结果可复现，同时不影响 `UnityEngine.Random`。详见[架构文档](Documentation/Architecture.zh-CN.md)。
 

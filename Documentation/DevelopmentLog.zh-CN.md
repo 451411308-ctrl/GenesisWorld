@@ -46,3 +46,6 @@
 
 ### Commit 12 — `Add stylized environment lighting`
 新增自定义 URP 环境 Shader，支持可调明暗分层、包裹式漫反射、环境补光、原贴图与颜色保留、植被透明裁剪，以及兼容透明裁剪的深度/阴影 Pass。项目自有适配材质覆盖全部已集成树木与岩石 Prefab，同时不修改 CC0 源资源。经同机位硬/软阴影运行对比后，最终采用硬方向光阴影。
+
+### Commit 13 — `Add atmospheric rendering polish`
+新增手写渐变天空、匹配场景尺度的 Linear Fog、协调的地平线/雾色与运行展示优化。Play Mode 对比覆盖 Fog Off 和两组范围、中性与暖色 Palette、原始与侧向光照角度，以及地面/高处/地平线视角。最终清爽日间方案使用 Fog `12–40`，保留均衡的暖 Directional Light 和 Commit 12 阴影配置，不新增后处理 Volume，也不改变程序化或 Gameplay 系统。

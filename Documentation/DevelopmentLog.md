@@ -46,3 +46,6 @@ Introduced the first custom URP terrain Shader. It uses world-space height, worl
 
 ### Commit 12 — `Add stylized environment lighting`
 Added a custom URP environment Shader with configurable light bands, wrapped diffuse response, ambient fill, source-texture and color preservation, alpha-clipped foliage, and alpha-aware depth/shadow passes. Project-owned adapter materials now style all integrated tree and rock Prefabs without modifying the CC0 source assets. Hard directional shadows were selected after same-camera hard/soft runtime comparison.
+
+### Commit 13 — `Add atmospheric rendering polish`
+Added a hand-written gradient skybox, scale-matched Linear Fog, coordinated horizon/fog colors, and runtime presentation polish. Play Mode comparisons covered Fog Off and two ranges, neutral and warm palettes, original and side-light angles, and ground/elevated/horizon views. The final clear-day setup uses Fog `12–40`, preserves the balanced warm Directional Light and Commit 12 shadow settings, adds no post-processing Volume, and leaves procedural/gameplay systems unchanged.

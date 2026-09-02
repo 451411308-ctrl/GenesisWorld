@@ -10,17 +10,19 @@ GenesisWorld explores how procedural generation, real-time rendering, and future
 
 ## Showcase
 
-![GenesisWorld procedural environment generated with seed 1001](Documentation/Images/GenesisWorld_ProceduralEnvironment_01.png)
+![GenesisWorld stylized procedural world with coordinated sky, fog, lighting, and shadows](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
 
-Real Unity Game View capture using world seed `1001`.
+Ground-level Unity Game View using seed `12345`, a custom gradient skybox, linear fog, and hard directional shadows.
 
-![GenesisWorld stylized terrain shader using height, slope, and directional lighting](Documentation/Images/GenesisWorld_StylizedTerrain_01.png)
+![GenesisWorld atmospheric overview showing procedural distribution and distance depth](Documentation/Images/GenesisWorld_Atmosphere_Overview_01.png)
 
-Commit 11 begins the rendering phase with a real Game View capture of the custom terrain Shader using seed `12345`.
+Elevated runtime view of the same deterministic world. Distant terrain, trees, and rocks blend toward the shared horizon/fog color.
+
+### Rendering Progress
 
 ![GenesisWorld stylized environment lighting with banded trees, rocks, and hard shadows](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
 
-Commit 12 extends the same visual language to environment assets while preserving their source textures and alpha-clipped foliage.
+Commit 11 established terrain shading, Commit 12 extended the lighting language to environment assets, and Commit 13 unified both through sky, fog, light, and presentation. Earlier captures remain in `Documentation/Images/`.
 
 ## Overview
 
@@ -39,6 +41,7 @@ GenesisWorld is an open-source Unity project for digital media technology study,
 - URP low-poly environment assets with simplified collision
 - Stylized terrain shading driven by world height, surface slope, and main directional light
 - Stylized environment lighting with configurable light bands, texture-preserving color tint, alpha clipping, and hard shadows
+- Custom gradient skybox and scale-matched linear fog with coordinated horizon color
 
 `Same seed + same parameters + same assets = same procedural world`
 
@@ -76,6 +79,7 @@ See [Procedural Terrain](Documentation/ProceduralTerrain.md) and [Procedural Env
 | `CameraController` | Third-person follow, orbit, pitch clamp, smoothing, and zoom |
 | `StylizedTerrain` | GPU height/slope color blending and lightweight directional lighting |
 | `StylizedEnvironment` | Texture-preserving banded lighting and alpha-aware environment shadows |
+| `StylizedSkybox` | View-direction gradient sky and coordinated atmospheric horizon |
 
 Terrain construction and environment placement are separate so each owns a clear lifecycle. Local `System.Random` instances provide reproducibility without contaminating `UnityEngine.Random`. See [Architecture](Documentation/Architecture.md).
 
