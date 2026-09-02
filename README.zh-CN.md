@@ -2,27 +2,25 @@
 
 [English](./README.md) | **简体中文**
 
-> 基于 Unity 的生成式虚拟世界项目，目前已实现可复现的程序化地形与环境生成系统。
+> 基于 Unity 的交互式虚拟环境，将确定性程序化生成与自定义 URP 风格化渲染基础结合。
 
-![Unity 2022.3 LTS](https://img.shields.io/badge/Unity-2022.3%20LTS-000000?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-512BD4?logo=csharp) ![URP](https://img.shields.io/badge/Rendering-URP-0C84FF) ![Version](https://img.shields.io/badge/version-v0.2.0-2ea44f)
+![Unity 2022.3 LTS](https://img.shields.io/badge/Unity-2022.3%20LTS-000000?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-512BD4?logo=csharp) ![URP](https://img.shields.io/badge/Rendering-URP-0C84FF) ![Milestone](https://img.shields.io/badge/milestone-v0.3.0-2ea44f)
 
-GenesisWorld 探索程序化生成、实时渲染与后续生成式 AI 系统如何组合成可交互虚拟环境。当前版本聚焦程序化世界基础，并非完整游戏，也尚未实现 AI 功能。
+GenesisWorld 探索程序化生成、实时图形与后续生成式 AI 系统如何构成交互式虚拟环境。**当前里程碑：v0.3.0 — 渲染与 Shader。**项目已经形成风格化渲染基础，但不是完整游戏、生产级渲染引擎，也尚未实现 AI 产品功能。
 
 ## 项目展示
 
 ![拥有协调天空、雾、光照与阴影的 GenesisWorld 风格化程序化世界](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
 
-地面附近真实 Unity Game View，Seed 为 `12345`，使用自定义渐变天空、线性雾与硬方向光阴影。
-
-![展示程序化分布与距离层次的 GenesisWorld 大气概览](Documentation/Images/GenesisWorld_Atmosphere_Overview_01.png)
-
-同一个确定性世界的高处运行视角；远处地形、树木与岩石逐渐混合到共享地平线/雾色。
+地面附近真实 Unity Game View，Seed 为 `12345`，使用自定义地形/环境/天空 Shader、Linear Fog 与硬方向光阴影。
 
 ### 渲染开发过程
 
-![使用分层树木、岩石与硬阴影的 GenesisWorld 风格化环境光照](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
+| 风格化地形 — Commit 11 | 风格化环境 — Commit 12 |
+|---|---|
+| ![高度与坡度驱动的风格化地形](Documentation/Images/GenesisWorld_StylizedTerrain_01.png) | ![分层环境光照与硬阴影](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png) |
 
-Commit 11 建立地形着色，Commit 12 将光照语言扩展到环境资产，Commit 13 再通过天空、雾、光照与构图统一两者。更早截图继续保留在 `Documentation/Images/`。
+Commit 13 通过天空、雾、光照与完整场景呈现统一表面和环境阶段。更早截图继续保留在 `Documentation/Images/`，真实记录项目演进。
 
 ## 项目概述
 
@@ -39,9 +37,12 @@ GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索�
 - 基于 Raycast、坡度限制和最小间距的树木与岩石生成
 - 确定性的 Prefab 选择、旋转与缩放
 - 使用 URP 材质和简化碰撞体的 Low-poly 环境资产
-- 基于世界高度、表面坡度与主方向光的风格化地形 Shader
-- 支持可调明暗分层、原贴图颜色、透明裁剪与硬阴影的风格化环境光照
-- 自定义渐变天空与匹配场景尺度的线性雾，并统一地平线颜色
+- 支持接收阴影与 Fog 的自定义 URP 风格化地形 Shader
+- 支持光照量化与包裹式漫反射的自定义风格化环境 Shader
+- 保留 `BaseMap` / `BaseColor`、透明裁剪与支持 Alpha 的植被阴影
+- 支持天顶、地平线、下半球颜色与过渡控制的自定义渐变天空盒
+- 与地平线颜色匹配的线性大气雾
+- 统一的方向光、硬阴影与环境光呈现
 
 `相同种子 + 相同参数 + 相同资产 = 相同程序化世界`
 
@@ -67,6 +68,24 @@ flowchart TD
 ```
 
 实现细节见[程序化地形](Documentation/ProceduralTerrain.zh-CN.md)与[程序化环境](Documentation/ProceduralEnvironment.zh-CN.md)。
+
+## 渲染流程
+
+```mermaid
+flowchart TD
+    A[CPU：Mesh 与世界生成] --> B[地形 Mesh]
+    A --> C[树木与岩石实例]
+    B --> D[StylizedTerrain]
+    C --> E[StylizedEnvironment]
+    F[方向光] --> D
+    F --> E
+    D --> G[大气呈现]
+    E --> G
+    H[StylizedSkybox 与 Linear Fog] --> G
+    G --> I[最终风格化场景]
+```
+
+CPU 系统负责几何与确定性放置，GPU Shader 负责表面外观、光照与大气。详见[渲染与 Shader](Documentation/RenderingAndShaders.zh-CN.md)。
 
 ## 系统架构
 
@@ -122,9 +141,9 @@ GenesisWorld/
 
 ## 当前里程碑
 
-**v0.2.0 — 程序化世界里程碑**
+**v0.3.0 — 渲染与 Shader 里程碑**
 
-本里程碑完成规则网格、Perlin 地形、种子复现、环境放置与 Low-poly 资产集成，为后续渲染、AI NPC 与 AIGC 研究提供基础。详见[里程碑报告](Documentation/ProceduralWorld_Milestone.zh-CN.md)。
+风格化渲染基础已经完成：自定义地形、环境与天空 Shader，方向光、硬阴影、Linear Fog 与统一大气呈现。这不代表渲染工作永远完成。详见 [v0.3.0 里程碑报告](Documentation/RenderingAndShaders_Milestone.zh-CN.md)。
 
 ## 开发路线
 
@@ -132,7 +151,7 @@ GenesisWorld/
 |---|---|---|
 | v0.1.0 | 核心框架 | ✅ 已完成 |
 | v0.2.0 | 程序化世界 | ✅ 已完成 |
-| v0.3.0 | 渲染与 Shader 开发 | 🚧 进行中 |
+| v0.3.0 | 渲染与 Shader | ✅ 已完成 |
 | v0.4.0 | AI NPC 交互 | ⏳ 计划中 |
 | v0.5.0 | AIGC 辅助内容流程 | ⏳ 计划中 |
 
@@ -147,6 +166,7 @@ Biome、Chunk、无限地形、水体、高级 Shader、AI NPC 与运行时 AIGC
 - [系统架构](Documentation/Architecture.zh-CN.md) · [工程配置](Documentation/ProjectConfiguration.zh-CN.md)
 - [开发日志](Documentation/DevelopmentLog.zh-CN.md) · [开发路线](Documentation/Roadmap.zh-CN.md)
 - [第一周里程碑](Documentation/Week1_Milestone.zh-CN.md) · [程序化世界里程碑](Documentation/ProceduralWorld_Milestone.zh-CN.md)
+- [渲染与 Shader 里程碑](Documentation/RenderingAndShaders_Milestone.zh-CN.md)
 - [程序化地形](Documentation/ProceduralTerrain.zh-CN.md) · [程序化环境](Documentation/ProceduralEnvironment.zh-CN.md)
 - [渲染与 Shader](Documentation/RenderingAndShaders.zh-CN.md)
 - [第三方资源](Documentation/ThirdPartyAssets.zh-CN.md)

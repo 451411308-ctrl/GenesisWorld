@@ -12,21 +12,24 @@ GenesisWorld uses explicit references and narrow responsibilities to keep gamepl
 Unity Engine + URP
 ├── PlayerController ── updates player motion
 ├── CameraController ── observes CameraTarget
-├── Procedural World
-    ├── MeshGenerator ── grid data and noise heights
-    ├── TerrainGenerator ── Mesh lifecycle and terrain event
-    └── EnvironmentSpawner ── deterministic surface placement
-└── Rendering Layer [In Progress]
-    ├── StylizedTerrain ── height/slope color and directional lighting
-    ├── StylizedEnvironment ── texture-preserving light bands and alpha-aware shadows
-    └── StylizedSkybox ── view-direction gradient and atmospheric horizon
+├── Procedural World [v0.2 Complete / CPU]
+│   ├── MeshGenerator ── grid data and noise heights
+│   ├── TerrainGenerator ── Mesh lifecycle and terrain event
+│   └── EnvironmentSpawner ── deterministic surface placement
+└── Rendering Layer [v0.3 Foundation Complete / GPU]
+    ├── StylizedTerrain ── height/slope color, lighting, shadow, and fog
+    ├── StylizedEnvironment ── textured light bands and alpha-aware shadows
+    ├── StylizedSkybox ── view-direction gradient and atmospheric horizon
+    └── RenderSettings ── skybox assignment and Linear Fog (no runtime manager)
 ```
 
 Terrain generation and environment placement are separate: the terrain owns geometry and collision; the spawner waits for `TerrainGenerated` and owns only its generated hierarchy. Local `System.Random` streams make results reproducible without changing global Unity randomness.
 
+The rendering boundary follows the same principle. CPU modules answer where geometry exists; custom GPU Shaders answer how visible surfaces look. Directional Light, shadow settings, Skybox, and Fog connect those surfaces into the final scene without changing procedural state.
+
 ## Future Layers
 
-- Rendering and Shader development is in progress. `StylizedTerrain` handles generated ground, `StylizedEnvironment` applies the shared lighting direction to textured tree and rock Prefabs, and `StylizedSkybox` provides the scene horizon used by Linear Fog. Atmosphere remains RenderSettings configuration rather than a new runtime manager. A complete rendering layer is not yet finished.
+- The v0.3 stylized rendering foundation is complete. Future graphics studies such as water, wind, Additional Lights, post processing, or LOD remain optional independent work—not existing features and not a claim of a complete rendering engine.
 - AI Interaction will later isolate NPC context, decisions, scheduling, and provider adapters.
 - AIGC Content will be an editor/offline workflow whose outputs require review and optimization.
 

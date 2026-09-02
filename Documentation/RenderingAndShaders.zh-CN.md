@@ -2,208 +2,167 @@
 
 [English](./RenderingAndShaders.md) | **简体中文**
 
-## 渲染基础
+## 概述
 
-GenesisWorld 使用 Unity `2022.3.62f3`、Universal Render Pipeline `14.0.12`、ShaderLab 与手写 HLSL。Commit 11 新增项目首个自定义 URP Shader：`GenesisWorld/StylizedTerrain`。实现刻意保持纯颜色与轻量结构，便于理解图形学概念和长期维护。
+GenesisWorld v0.3.0 渲染基础使用 Unity `2022.3.62f3c1`、Universal Render Pipeline `14.0.12`、ShaderLab 与手写 HLSL。三个紧凑的自定义 Shader 分别呈现生成地形、带贴图的 Low-poly 资产和天空。设计重点是让图形学基础保持清晰，而不是覆盖完整 PBR 功能集。
 
-## CPU 几何与 GPU 着色
+面向作品集展示的学习路线见 [v0.3.0 渲染与 Shader 里程碑](./RenderingAndShaders_Milestone.zh-CN.md)。
 
-CPU 与 GPU 分别解决地形的不同问题：
+## 渲染架构
 
-- C#（`MeshGenerator`、`TerrainGenerator`）回答：**顶点在哪里？** 它构建拓扑、采样 Perlin Noise、设置高度并更新碰撞。
-- GPU Shader 回答：**表面应该呈现什么颜色？** 它使用完成后的世界坐标、法线与光照计算可见颜色。
+```text
+CPU 世界生成                                  GPU 世界呈现
+MeshGenerator ── 几何 ────────────────────→ StylizedTerrain
+TerrainGenerator ── Mesh/Collider 生命周期 ↗    ↑ 主光 / 阴影 / 雾
+EnvironmentSpawner ── 放置实例 ───────────→ StylizedEnvironment
+摄像机观察方向 ───────────────────────────→ StylizedSkybox
+RenderSettings ── Skybox + Linear Fog ────→ 最终风格化场景
+```
 
-Fragment Shader 不会重新采样 Perlin Noise，也不会改变程序化生成结果。
+程序化 C# 代码决定**几何和实例在哪里**，GPU 决定**可见表面如何呈现**。Shader 不重新采样 Perlin Noise，不改变 World Seed，也不管理环境放置。
 
-## 渲染流程
+## Shader 流程
 
 ```text
 顶点位置 + 法线
         ↓ Vertex Stage
-Object → World → Clip Position
-        ↓ 插值数据
-世界高度 + 世界法线 + 主光
+对象空间 → 世界空间 → 裁剪空间
+        ↓ 光栅化 / 插值
+世界位置 + 世界法线 + 主光
         ↓ Fragment Stage
-高度颜色 → 坡度混合 → 风格化 Lambert 光照 → Fog
+表面颜色 → 光照 → 阴影衰减 → 雾
         ↓
-最终像素颜色
+最终 Pixel 颜色
 ```
 
-Vertex Shader 将每个顶点转换到裁剪空间，并传递世界空间坐标与正确转换后的法线。Fragment Shader 为光栅化后的 Fragment/Pixel 计算地形颜色与光照。
+世界空间为地形坡度、主光方向与天空方向提供稳定的共同坐标系。
 
-## 基于高度的地形颜色
+## 风格化地形
 
-世界空间高度首先归一化到 `0–1`：
+[`StylizedTerrain.shader`](../Assets/Shaders/Terrain/StylizedTerrain.shader) 无需地形贴图集即可为生成地面着色。其 `UniversalForward` Pass 接收世界位置、世界法线、主光阴影坐标和 Fog Factor；URP Lit 的 `ShadowCaster` 与 `DepthOnly` Pass 提供深度和投影支持。
+
+### 基于高度的颜色
 
 ```text
 heightFactor = saturate((worldY - HeightMin) / max(HeightMax - HeightMin, 0.0001))
 heightColor = lerp(LowColor, HighColor, heightFactor)
 ```
 
-`lerp` 在 0 时选择低处颜色，在 1 时选择高处颜色，中间按比例混合。epsilon 防止除零。使用世界空间后，即使未来移动 Terrain GameObject，高度含义仍然明确。
+Epsilon 防止除零。当前材质范围为 `-2.5～2.5`，对应以零为中心、Height Scale 为 `5` 的地形。
 
-## 坡度检测与表面法线
-
-Surface Normal 是垂直指向表面外侧的单位向量。Mesh Normal 会先正确转换并归一化到世界空间，再与 World Up 比较：
+### 坡度检测
 
 ```text
 upAlignment = saturate(dot(normalWS, float3(0, 1, 0)))
 slope = 1 - upAlignment
 slopeFactor = smoothstep(SlopeStart, SlopeEnd, slope)
+baseColor = lerp(heightColor, SlopeColor, slopeFactor)
 ```
 
-平地上 `N ≈ (0,1,0)`，因此 `dot(N, Up) ≈ 1`，坡度接近 0。表面越倾斜，点积越小，Slope Factor 越大。`smoothstep` 用于避免草地与岩石颜色之间出现生硬分界。
+平地法线与 World Up 对齐，坡度颜色较少；倾斜法线会降低点积，并平滑引入土石颜色。
 
-## 点积与基础光照
-
-`dot(N, L)` 表示归一化表面法线和主光方向的接近程度。面向光源的表面点积更大、更亮；背向光源时接近零。
-
-Shader 使用 Lambert Diffuse，并乘以 URP 主光颜色、距离衰减和阴影衰减。`_AmbientStrength` 提供最低亮度，避免背光面完全变黑。这是轻量风格化模型，而非完整 PBR BRDF。
-
-## Shader 参数
-
-| 分组 | 属性 | 默认值 | 作用 |
-|---|---|---:|---|
-| 高度 | Low Color | `(0.10, 0.24, 0.07)` | 低处深色草地 |
-| 高度 | High Color | `(0.48, 0.62, 0.24)` | 高处浅色/干草色 |
-| 高度 | Height Min / Max | `-2.5 / 2.5` | 世界高度归一化范围 |
-| 坡度 | Slope Color | `(0.36, 0.32, 0.27)` | 陡坡岩土色 |
-| 坡度 | Slope Start / End | `0.04 / 0.12` | 平滑坡度过渡 |
-| 光照 | Ambient Strength | `0.32` | 最低亮度 |
-
-高度范围对应当前 `heightScale = 5`。Seed `12345` 的运行时测量结果为世界高度 `-1.755～2.029`，最大顶点法线坡度 `28.348°`。
-
-## URP 集成
-
-- 使用 URP `Core.hlsl` 与 `Lighting.hlsl` 的 `UniversalForward` Pass
-- 支持主方向光颜色、方向以及阴影衰减变体
-- 自定义 `ShadowCaster` 与 `DepthOnly` Pass 保留透明裁剪轮廓
-- 通过 `ComputeFogFactor` 和 `MixFog` 兼容 Fog
-- 材质参数位于 `UnityPerMaterial` CBUFFER，兼容 SRP Batcher
-
-## 风格化环境 Shader
-
-Commit 12 新增 `GenesisWorld/StylizedEnvironment`，用于程序化生成的树木与岩石。Shader 将各资产的原始 Base Texture 与既有 Tint 相乘，在世界空间计算 `dot(N,L)`，加入少量包裹光后按 `_LightSteps` 量化。默认采用三档明暗，既增强 Low-poly 表面朝向，又不会抹去全部贴图细节。
-
-Low-poly 相邻面也可能拥有不同法线，因此同一光照方向下的 `N·L` 不同，这正是几何切面可读的重要来源。Shader 不直接保留 `0.12、0.35、0.63、0.91` 这类连续 Lambert 结果，而是将它们映射到少量稳定亮度：
+### 地形光照
 
 ```text
-wrapped = saturate((saturate(dot(normalWS, lightDirectionWS)) + LightWrap) / (1 + LightWrap))
-banded = round(wrapped * (LightSteps - 1)) / (LightSteps - 1)
-final = BaseMap × BaseColor × (AmbientStrength + MainLightColor × banded × attenuation)
+NdotL = saturate(dot(normalWS, lightDirectionWS))
+direct = NdotL * distanceAttenuation * shadowAttenuation
+lighting = AmbientStrength + mainLightColor * direct
 ```
 
-HLSL 内会将 `LightSteps` 限制为至少 2，避免除零。
+这是带标量环境亮度下限的轻量 Lambert 漫反射，不是完整 PBR BRDF 或采样 GI 方案。
 
-树皮、阔叶、针叶与岩石分别使用四个项目自有适配材质。材质直接引用既有 CC0 贴图，不复制或修改第三方源资产。叶片继续启用 `_ALPHATEST_ON` 与 `0.5` Cutoff，因此透明区域会在 Forward、Depth 和 ShadowCaster Pass 中一致剔除。
+## 风格化环境
 
-| 参数 | 默认值 | 作用 |
-|---|---:|---|
-| Base Map | 资产贴图 / White Fallback | 保留美术细节，并兼容无贴图材质 |
-| Base Color | 既有材质 Tint | 与采样贴图相乘 |
-| Light Steps | `3` | 离散漫反射亮度档数 |
-| Ambient Strength | `0.32`（叶片 `0.35`） | 避免背光面全黑 |
-| Light Wrap | `0.20`（叶片 `0.25`） | 提升树冠内部可读性 |
-| Alpha Cutoff | 叶片 `0.50` | 保留植被透明裁剪轮廓 |
+[`StylizedEnvironment.shader`](../Assets/Shaders/Environment/StylizedEnvironment.shader) 由项目自有树木/岩石适配材质使用。它保留源贴图与 Tint，同时通过包裹式、量化的直接光提升 Low-poly 切面可读性。
 
-环境与地形 Shader 的表面职责不同，但共用同一个主 Directional Light：
-
-- `StylizedTerrain` 面向没有美术贴图集的生成地面，依据高度和坡度决定颜色。
-- `StylizedEnvironment` 保留树木和岩石的原贴图与 Tint，再对其法线加入可调分层光照。
-
-## 阴影记录
-
-Commit 11 在启用 Soft Shadow 时发现锯齿和拉长的植被轮廓，因此当时场景保持无阴影。Commit 12 追踪了运行时 Prefab 与材质 Alpha 设置，新增支持透明裁剪的自定义 ShadowCaster Pass，并在每次切换后等待 URP 重建阴影资源，再比较 None、Hard 与 Soft 三种模式。
-
-同机位运行对比覆盖 2、3、4 档明暗，以及 Hard/Soft Shadow。三档明暗在层次与可读性之间最平衡；测试场景最终选择 Hard Shadow，因为轮廓更符合 Low-poly/Cell 风格。Light Bias 保持 `0.05`、Normal Bias `0.4`、Near Plane `0.2`；High Fidelity 质量档现使用 `2048` 主光阴影贴图、`40` 单位阴影距离与两级 Cascade，替换模板对当前 `20×20` 小场景过高的 `4096` / `150` / 四级配置。Commit 13 开始实际使用已有 Fog 兼容能力，具体如下。
-
-## 大气渲染
-
-Commit 13 将地形与环境 Shader 放进明确设计的大气环境，而不是继续增加表面效果。最终方向为清爽风格化日间：冷蓝天顶、浅蓝绿色地平线、克制的线性距离雾、微暖日光，以及既有硬阴影语言。本次没有加入 Volume、HDRI、物理散射、云或 Ray Marching。
-
-大气流程保持轻量：
+### BaseMap 与 BaseColor
 
 ```text
-相机观察方向 → StylizedSkybox 渐变
-物体到相机距离 → Unity Linear Fog Factor
-Terrain / Environment / Player 颜色 → MixFog 混合到地平线色
-暖 Directional Light + Hard Shadow → 局部形体与接触关系
+surface = sample(BaseMap, uv) * BaseColor
 ```
 
-## 风格化天空
+项目不修改导入的 CC0 源材质；适配材质引用其贴图并应用自定义 Shader。
 
-`GenesisWorld/StylizedSkybox` 是手写 URP Shader，仅包含四个材质参数：
+### 世界空间法线与光照量化
 
-| 参数 | 最终值 | 作用 |
+完整 `N·L` 解释已在上方地形光照中给出。环境着色额外加入包裹与分档：
+
+```text
+wrapped = saturate((saturate(dot(N, L)) + LightWrap) / (1 + LightWrap))
+steps = max(round(LightSteps), 2)
+banded = round(wrapped * (steps - 1)) / (steps - 1)
+```
+
+当前默认选择三档。包裹项让略微背光的切面仍可读；量化把连续漫反射变成受控的 Low-poly/Cell 风格明暗语言。
+
+### 透明裁剪
+
+启用 `_ALPHATEST_ON` 时，低于 `_Cutoff` 的 Fragment 会被丢弃。Forward、`ShadowCaster` 与 `DepthOnly` Pass 调用同一个表面采样函数，因此植被颜色、阴影轮廓和深度轮廓保持一致。
+
+### 阴影与深度
+
+自定义 `ShadowCaster` 使用 URP Shadow Bias，并支持方向光/点光投影变体；`DepthOnly` 只写深度。经同机位 Hard/Soft 对比后采用 Hard Shadow，因为其轮廓在当前尺度下更清晰。
+
+## 风格化天空盒
+
+[`StylizedSkybox.shader`](../Assets/Shaders/Sky/StylizedSkybox.shader) 是无贴图的观察方向渐变：
+
+| 参数 | 当前值 | 作用 |
 |---|---:|---|
-| Zenith Color | `(0.18, 0.42, 0.72)` | 冷色上层天空 |
-| Horizon Color | `(0.72, 0.84, 0.82)` | 浅色大气过渡与雾目标色 |
-| Lower Color | `(0.32, 0.38, 0.28)` | 地形边缘可见时的自然下半球颜色 |
-| Horizon Exponent | `0.65` | 控制地平线过渡宽度与柔和程度 |
+| Zenith Color | `(0.18, 0.42, 0.72)` | 上层天空蓝色 |
+| Horizon Color | `(0.72, 0.84, 0.82)` | 大气过渡与雾目标色 |
+| Lower Color | `(0.32, 0.38, 0.28)` | 自然下半球颜色 |
+| Horizon Exponent | `0.65` | 渐变过渡形状 |
 
-## 观察方向
+### 观察方向与地平线渐变
 
-Skybox 不需要知道每个天空 Pixel 的世界坐标，主要需要相机正在观察的方向。Vertex Stage 将天空盒立方体方向转换到世界空间；Fragment Stage 将其归一化并读取 `viewDirection.y`。
-
-- 正 Y 指向 Zenith。
-- 接近 0 指向 Horizon。
-- 负 Y 指向下半球。
-
-## 地平线渐变
-
-Shader 使用 `smoothstep` 再接 `pow`，而不是机械线性渐变：
+Vertex Stage 将立方体方向转换到世界空间；Fragment Stage 归一化后读取 Y：正值从地平线混合到天顶，负值从地平线混合到下半球。
 
 ```text
 upper = pow(smoothstep(0, 1, saturate(viewDirection.y)), HorizonExponent)
 lower = pow(smoothstep(0, 1, saturate(-viewDirection.y)), HorizonExponent)
-upperSky = lerp(HorizonColor, ZenithColor, upper)
-lowerSky = lerp(HorizonColor, LowerColor, lower)
 ```
 
-上下渐变在同一个 Horizon Color 汇合，因此不会形成接缝。方向与渐变因子使用完整 `float` 精度；运行检查未发现粉色天空、黑色天空、接缝或明显色带。
+两个半球在同一个 Horizon Color 汇合，避免人为接缝。
 
-## 雾
+## 雾与大气深度
 
-场景现使用 Unity Linear Fog，Start 为 `12`，End 为 `40`。Fog 不是放在世界中的一层灰色透明平面；兼容 Shader 会依据相机距离计算 Fog Factor，再将表面结果混合到 Fog Color。
+场景使用 `12–40` Unity Linear Fog。地形与环境 Forward Pass 编译 Fog Variant，计算 `ComputeFogFactor`，并在光照之后调用 `MixFog`。
 
 ```text
-FinalColor = lerp(ObjectColor, FogColor, FogFactor)
+FinalColor = lerp(SurfaceColor, FogColor, FogFactor)
 ```
 
-运行对比覆盖 Fog Off、`12–40` 与 `10–32`。关闭 Fog 时远景与地平线分离；`10–32` 对紧凑世界的淡化过强；`12–40` 在保留树木/岩石颜色的同时提供了大气深度。Terrain、树皮、Alpha Clip 叶片、岩石、阴影与 Player 均保持正常。
+Fog Color 与 Skybox Horizon Color 完全一致：`(0.72, 0.84, 0.82)`。运行对比覆盖 Fog Off、`12–40` 与 `10–32`；`12–40` 能保留局部颜色并提供有效距离层次。
 
-## 雾与地平线匹配
+## 光照与质量配置
 
-Fog Color 与材质 Horizon Color 完全一致：`(0.72, 0.84, 0.82)`。远处表面会逐渐靠近其背景色，不会出现灰色或蓝色断层。这种深度线索能让小型程序化世界形成统一空间感，但不会伪装成无限世界。
+- Directional Light：Rotation `(48, -32, 0)`，暖色 `(1.00, 0.94, 0.84)`，Intensity `1.15`
+- Ambient Source：Skybox，Intensity `1.0`；自定义材质标量 Ambient 约为 `0.32–0.35`
+- High Fidelity 阴影：Hard、`2048` 主光贴图、`40` 距离、两级 Cascade
+- Light Bias `0.05`；Normal Bias `0.4`；Near Plane `0.2`
+- Shadow Distance 与 Fog End 都是 `40`
 
-## 方向光调整
-
-实际比较了两组光照方向。新的 `42°, -55°, 0°` 侧向角度强化了切面，但前景植被过暗且阴影过长；既有 `48°, -32°, 0°` 更均衡，因此 Rotation、暖色 `(1.00, 0.94, 0.84)` 与强度 `1.15` 均保持不变。Skybox Ambient Mode 与强度 `1.0` 也不变；自定义地形/环境材质继续使用 `0.32–0.35` Ambient，保证背光面可读但不抹平明暗分档。
-
-## 阴影距离
-
-保留 Commit 12 的稳定配置：Hard Shadow、`2048` 主光阴影贴图、`40` 距离、两级 Cascade、Bias `0.05`、Normal Bias `0.4`、Near Plane `0.2`。Shadow Distance 与 Fog End 现在一致，避免计算大气范围之外不可见的阴影。树木、岩石、地形和 Player 均未再出现早期植被拉长伪影。
-
-## 大气渲染流程
-
-最终大气只由场景配置和一个天空 Shader 组成，没有新增运行时 Manager。它与 `MeshGenerator`、`TerrainGenerator`、`EnvironmentSpawner`、Player、Camera 和 World Seed 保持独立。同 Seed 重生成仍得到签名 `2087925580`、`18` 棵树与 `12` 块岩石。
+此基础不需要 Global Volume 或自定义 Atmosphere Manager。
 
 ## 运行验证
 
-- 两个自定义 Shader 均受支持；四个环境适配材质均保留源贴图
-- 高度范围：`-1.755～2.029`；最大坡度：`28.348°`
-- 树木/岩石：`18/12`
-- 重复生成 Signature：两次均为 `2087925580`
-- 六个环境 Prefab 全部使用自定义 Shader，并保留启用的 Collider
-- Player 存在且启动后正常落地，地形碰撞保持有效
-- 未发现 C# 或 Shader 编译错误
-- 已在 Play Mode 对比 Fog Off / `12–40` / `10–32`、两套 Palette、两种光照角度与地面/高处/地平线视角
-- 最终天空通过 RenderSettings 绑定；Camera 继续使用 Skybox Clear Mode
+- 场景：`Assets/Scenes/Test_Player_Controller.unity`
+- 地形：`20 × 20`，`50 × 50` 分段，Height Scale `5`
+- 环境：`18` 棵树、`12` 块岩石；适配材质保留源贴图
+- Seed `12345`：重复 Layout Signature `2087925580`
+- 地形、环境、天空盒、硬阴影与 Linear Fog 正常渲染，无粉色材质
+- 里程碑验证期间项目 C# 与 Shader Error：`0`
 
 ## 当前限制
 
-地形 Shader 使用 `RecalculateNormals` 生成的顶点法线，因此地形仍为平滑着色。当前渲染层没有地形纹理层、Triplanar、环境 Normal Map、附加光源循环、物理大气散射、体积雾、云、后处理 Volume、自定义 GI 或平台专项阴影调优。环境适配层刻意采用直接光/环境光分档，而不是完整 URP Lit PBR 特性集。
+- 仅处理主方向光，没有自定义 Additional Lights 循环
+- 自定义地形/环境 Shader 不包含 PBR 工作流
+- 地形使用平滑顶点法线，没有 Triplanar Texture Layer 或 Normal Map
+- 没有水体、植被风动、天气、昼夜循环、云或体积雾
+- 没有屏幕空间效果或后处理框架
+- 仅有小型单块程序化地图，没有 Biome、Chunk、Streaming 或 LOD
 
 ## 后续渲染方向
 
-后续 Commit 可以研究地形/环境配色统一、远距离可读性与平台专项阴影质量。纹理混合和更高级技术应作为独立、可验证的增量实现。
+未来可选择研究水体、风动、Additional Lights、后处理或 LOD，但都需要独立设计与验证，不属于 v0.3.0，也不属于规划中的 v0.4.0 AI NPC 里程碑。

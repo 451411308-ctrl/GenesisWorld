@@ -49,3 +49,6 @@ Added a custom URP environment Shader with configurable light bands, wrapped dif
 
 ### Commit 13 — `Add atmospheric rendering polish`
 Added a hand-written gradient skybox, scale-matched Linear Fog, coordinated horizon/fog colors, and runtime presentation polish. Play Mode comparisons covered Fog Off and two ranges, neutral and warm palettes, original and side-light angles, and ground/elevated/horizon views. The final clear-day setup uses Fog `12–40`, preserves the balanced warm Directional Light and Commit 12 shadow settings, adds no post-processing Volume, and leaves procedural/gameplay systems unchanged.
+
+### Commit 14 — `Complete rendering documentation and v0.3.0 milestone`
+Closed the Stylized Rendering Foundation milestone, reorganized the rendering guide around CPU/GPU responsibilities and graphics concepts, added a bilingual v0.3.0 milestone report, refined the GitHub showcase, and prepared the annotated tag and release notes without changing Shader logic, scene rendering, procedural systems, or gameplay.

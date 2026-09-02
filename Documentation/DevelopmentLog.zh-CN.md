@@ -49,3 +49,6 @@
 
 ### Commit 13 — `Add atmospheric rendering polish`
 新增手写渐变天空、匹配场景尺度的 Linear Fog、协调的地平线/雾色与运行展示优化。Play Mode 对比覆盖 Fog Off 和两组范围、中性与暖色 Palette、原始与侧向光照角度，以及地面/高处/地平线视角。最终清爽日间方案使用 Fog `12–40`，保留均衡的暖 Directional Light 和 Commit 12 阴影配置，不新增后处理 Volume，也不改变程序化或 Gameplay 系统。
+
+### Commit 14 — `Complete rendering documentation and v0.3.0 milestone`
+完成风格化渲染基础里程碑收口，按照 CPU/GPU 职责与图形学概念重组渲染技术文档，新增双语 v0.3.0 里程碑报告，优化 GitHub 展示，并准备注解标签与 Release Notes；未改变 Shader Logic、场景渲染、程序化系统或 Gameplay。

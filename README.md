@@ -2,27 +2,25 @@
 
 **English** | [简体中文](./README.zh-CN.md)
 
-> A Unity-based generative virtual world prototype featuring deterministic procedural terrain and environment generation.
+> A Unity-based interactive virtual environment combining deterministic procedural generation with a custom stylized URP rendering foundation.
 
-![Unity 2022.3 LTS](https://img.shields.io/badge/Unity-2022.3%20LTS-000000?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-512BD4?logo=csharp) ![URP](https://img.shields.io/badge/Rendering-URP-0C84FF) ![Version](https://img.shields.io/badge/version-v0.2.0-2ea44f)
+![Unity 2022.3 LTS](https://img.shields.io/badge/Unity-2022.3%20LTS-000000?logo=unity) ![C#](https://img.shields.io/badge/Language-C%23-512BD4?logo=csharp) ![URP](https://img.shields.io/badge/Rendering-URP-0C84FF) ![Milestone](https://img.shields.io/badge/milestone-v0.3.0-2ea44f)
 
-GenesisWorld explores how procedural generation, real-time rendering, and future generative AI systems can be combined into an interactive virtual environment. The current release is a procedural-world foundation—not a complete game or an implemented AI product.
+GenesisWorld explores how procedural generation, real-time graphics, and future generative AI systems can form an interactive virtual environment. **Current milestone: v0.3.0 — Rendering & Shader.** The project now has a Stylized Rendering Foundation; it is not a complete game, production rendering engine, or implemented AI product.
 
 ## Showcase
 
 ![GenesisWorld stylized procedural world with coordinated sky, fog, lighting, and shadows](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
 
-Ground-level Unity Game View using seed `12345`, a custom gradient skybox, linear fog, and hard directional shadows.
-
-![GenesisWorld atmospheric overview showing procedural distribution and distance depth](Documentation/Images/GenesisWorld_Atmosphere_Overview_01.png)
-
-Elevated runtime view of the same deterministic world. Distant terrain, trees, and rocks blend toward the shared horizon/fog color.
+Ground-level Unity Game View using seed `12345`, custom terrain/environment/sky Shaders, Linear Fog, and hard directional shadows.
 
 ### Rendering Progress
 
-![GenesisWorld stylized environment lighting with banded trees, rocks, and hard shadows](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png)
+| Stylized Terrain — Commit 11 | Stylized Environment — Commit 12 |
+|---|---|
+| ![Height and slope driven stylized terrain](Documentation/Images/GenesisWorld_StylizedTerrain_01.png) | ![Banded environment lighting and hard shadows](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png) |
 
-Commit 11 established terrain shading, Commit 12 extended the lighting language to environment assets, and Commit 13 unified both through sky, fog, light, and presentation. Earlier captures remain in `Documentation/Images/`.
+Commit 13 unified the surface and environment stages through sky, fog, light, and whole-scene presentation. Earlier captures remain in `Documentation/Images/` as an honest evolution record.
 
 ## Overview
 
@@ -39,9 +37,12 @@ GenesisWorld is an open-source Unity project for digital media technology study,
 - Deterministic tree and rock spawning using raycasts, slope limits, and spacing
 - Seeded prefab selection, rotation, and scale
 - URP low-poly environment assets with simplified collision
-- Stylized terrain shading driven by world height, surface slope, and main directional light
-- Stylized environment lighting with configurable light bands, texture-preserving color tint, alpha clipping, and hard shadows
-- Custom gradient skybox and scale-matched linear fog with coordinated horizon color
+- Custom URP Stylized Terrain Shader with shadow receiving and Fog compatibility
+- Custom Stylized Environment Shader with quantized light bands and wrapped diffuse
+- Texture-preserving `BaseMap` / `BaseColor`, alpha clipping, and alpha-aware foliage shadows
+- Custom gradient skybox with zenith, horizon, lower color, and transition control
+- Linear atmospheric fog with horizon-matched color
+- Coordinated directional lighting, hard shadows, and ambient presentation
 
 `Same seed + same parameters + same assets = same procedural world`
 
@@ -67,6 +68,24 @@ flowchart TD
 ```
 
 See [Procedural Terrain](Documentation/ProceduralTerrain.md) and [Procedural Environment](Documentation/ProceduralEnvironment.md).
+
+## Rendering Pipeline
+
+```mermaid
+flowchart TD
+    A[CPU: Mesh and World Generation] --> B[Terrain Mesh]
+    A --> C[Tree and Rock Instances]
+    B --> D[StylizedTerrain]
+    C --> E[StylizedEnvironment]
+    F[Directional Light] --> D
+    F --> E
+    D --> G[Atmospheric Presentation]
+    E --> G
+    H[StylizedSkybox and Linear Fog] --> G
+    G --> I[Final Stylized Scene]
+```
+
+CPU systems own geometry and deterministic placement; GPU Shaders own surface appearance, lighting, and atmosphere. See [Rendering and Shaders](Documentation/RenderingAndShaders.md).
 
 ## Architecture
 
@@ -122,9 +141,9 @@ GenesisWorld/
 
 ## Current Milestone
 
-**v0.2.0 — Procedural World Milestone**
+**v0.3.0 — Rendering & Shader Milestone**
 
-This milestone completes the procedural-world foundation: grid mesh, Perlin terrain, seeded reproducibility, environment placement, and low-poly asset integration. It is a foundation for later rendering, AI NPC, and AIGC work. Read the [milestone report](Documentation/ProceduralWorld_Milestone.md).
+The Stylized Rendering Foundation is complete: custom terrain, environment, and skybox Shaders; directional lighting; hard shadows; Linear Fog; and coordinated atmosphere. This does not mean rendering is complete forever. Read the [v0.3.0 milestone report](Documentation/RenderingAndShaders_Milestone.md).
 
 ## Development Roadmap
 
@@ -132,7 +151,7 @@ This milestone completes the procedural-world foundation: grid mesh, Perlin terr
 |---|---|---|
 | v0.1.0 | Core Framework | ✅ Complete |
 | v0.2.0 | Procedural World | ✅ Complete |
-| v0.3.0 | Rendering & Shader Development | 🚧 In Progress |
+| v0.3.0 | Rendering & Shader | ✅ Complete |
 | v0.4.0 | AI NPC Interaction | ⏳ Planned |
 | v0.5.0 | AIGC-assisted Content Pipeline | ⏳ Planned |
 
@@ -147,6 +166,7 @@ The environment uses a curated subset of Quaternius's [Stylized Nature MegaKit](
 - [Architecture](Documentation/Architecture.md) · [Project Configuration](Documentation/ProjectConfiguration.md)
 - [Development Log](Documentation/DevelopmentLog.md) · [Roadmap](Documentation/Roadmap.md)
 - [Week 1 Milestone](Documentation/Week1_Milestone.md) · [Procedural World Milestone](Documentation/ProceduralWorld_Milestone.md)
+- [Rendering & Shader Milestone](Documentation/RenderingAndShaders_Milestone.md)
 - [Procedural Terrain](Documentation/ProceduralTerrain.md) · [Procedural Environment](Documentation/ProceduralEnvironment.md)
 - [Rendering and Shaders](Documentation/RenderingAndShaders.md)
 - [Third-Party Assets](Documentation/ThirdPartyAssets.md)
