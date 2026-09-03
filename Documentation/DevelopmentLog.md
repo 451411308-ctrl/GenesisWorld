@@ -52,3 +52,8 @@ Added a hand-written gradient skybox, scale-matched Linear Fog, coordinated hori
 
 ### Commit 14 — `Complete rendering documentation and v0.3.0 milestone`
 Closed the Stylized Rendering Foundation milestone, reorganized the rendering guide around CPU/GPU responsibilities and graphics concepts, added a bilingual v0.3.0 milestone report, refined the GitHub showcase, and prepared the annotated tag and release notes without changing Shader logic, scene rendering, procedural systems, or gameplay.
+
+## Week 4 — NPC Interaction
+
+### Commit 15 — `Add NPC interaction foundation`
+Introduced the initial NPC interaction layer with profile-based NPC data, camera-targeted interaction, a TMP dialogue UI, local mock responses, and safe player-input state control. No external AI provider, networking, or API credential is connected yet.

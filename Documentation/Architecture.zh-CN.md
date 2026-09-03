@@ -12,6 +12,11 @@ GenesisWorld 通过显式引用和单一职责，让游戏逻辑、程序化算�
 Unity Engine + URP
 ├── PlayerController ── 更新玩家运动
 ├── CameraController ── 观察 CameraTarget
+├── NPC 交互 [v0.4 进行中]
+│   ├── NPCProfile ── 稳定的编辑身份与本地 Greeting 数据
+│   ├── NPCActor ── 场景实体与 IInteractable 实现
+│   ├── PlayerInteractionController ── 摄像机目标检测与输入路由
+│   └── DialogueController ── 对话 UI 与玩家输入状态
 ├── 程序化世界 [v0.2 已完成 / CPU]
 │   ├── MeshGenerator ── 规则网格数据与噪声高度
 │   ├── TerrainGenerator ── Mesh 生命周期与地形事件
@@ -27,10 +32,12 @@ Unity Engine + URP
 
 渲染边界遵循相同原则：CPU 模块回答几何在哪里，自定义 GPU Shader 回答可见表面如何呈现。Directional Light、阴影设置、Skybox 与 Fog 将这些表面组合成最终场景，但不改变程序化状态。
 
+v0.4 交互边界已经将可编辑的 `NPCProfile` 数据与 `NPCActor` 场景实体分开。`PlayerInteractionController` 负责摄像机射线和交互输入，`DialogueController` 负责显示与临时移动锁定。当前回复来自 Profile 本地 Greeting，尚不存在 Provider 或网络层。
+
 ## 未来层级
 
 - v0.3 风格化渲染基础已经完成。水体、风动、Additional Lights、后处理或 LOD 等图形学研究仍是可选独立工作，不是现有功能，也不代表项目拥有完整渲染引擎。
-- AI Interaction 未来会隔离 NPC 上下文、决策、调度与服务商适配。
+- AI Interaction 下一步会加入与服务商无关的对话服务和适配接口；上下文、记忆、决策与日程仍属于未来工作。
 - AIGC Content 将作为编辑器/离线生产流程，其输出必须经过审核和优化。
 
 这些是规划中的职责边界，不代表已实现的运行时功能。

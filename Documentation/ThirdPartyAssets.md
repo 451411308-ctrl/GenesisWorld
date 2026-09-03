@@ -33,3 +33,18 @@ This document records third-party content redistributed with GenesisWorld. Asset
 ### Redistribution
 
 The repository contains a minimal subset rather than the complete 99 MB Standard pack. `LICENSE.txt` comes from the official archive. No paid Pro or Source edition files are included.
+
+## TextMesh Pro Essential Resources
+
+| Field | Record |
+|---|---|
+| Package | TextMesh Pro `3.0.7` (Unity package) |
+| Purpose | Runtime font asset, settings, shaders, line-breaking data, and optional sprite resources required by the dialogue UI |
+| Imported path | `Assets/TextMesh Pro/` |
+| Scope | Essentials only; documentation and Examples & Extras were not committed |
+
+The imported resources retain their bundled notices. `Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt` records the SIL Open Font License for Liberation Sans, and `Assets/TextMesh Pro/Sprites/EmojiOne Attribution.txt` records the bundled EmojiOne attribution. GenesisWorld does not modify or claim ownership of these resources.
+
+## Project-created NPC Placeholder
+
+`Assets/Prefabs/NPC/GuideNPC.prefab` and its two materials are created for GenesisWorld from Unity primitives. They do not include a downloaded character model or a third-party animation.

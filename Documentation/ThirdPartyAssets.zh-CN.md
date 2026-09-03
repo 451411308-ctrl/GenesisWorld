@@ -33,3 +33,18 @@
 ### 再分发说明
 
 仓库仅包含必要子集，不包含完整的 99 MB Standard 资源包。`LICENSE.txt` 来自官方下载压缩包；仓库未包含任何付费 Pro 或 Source 版本文件。
+
+## TextMesh Pro Essential Resources
+
+| 字段 | 记录 |
+|---|---|
+| Package | TextMesh Pro `3.0.7`（Unity Package） |
+| 用途 | 对话 UI 所需的运行时字体资源、设置、Shader、断行数据与可选 Sprite 资源 |
+| 导入路径 | `Assets/TextMesh Pro/` |
+| 范围 | 仅保留 Essentials；Documentation 与 Examples & Extras 未提交 |
+
+导入资源保留随附声明。`Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt` 记录 Liberation Sans 的 SIL Open Font License，`Assets/TextMesh Pro/Sprites/EmojiOne Attribution.txt` 记录随附 EmojiOne 署名信息。GenesisWorld 不修改这些资源，也不主张其所有权。
+
+## 项目自制 NPC 占位模型
+
+`Assets/Prefabs/NPC/GuideNPC.prefab` 及其两个材质由 Unity Primitive 在 GenesisWorld 内创建，不包含下载的角色模型或第三方动画。

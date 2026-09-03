@@ -8,6 +8,8 @@
 
 GenesisWorld explores how procedural generation, real-time graphics, and future generative AI systems can form an interactive virtual environment. **Current milestone: v0.3.0 — Rendering & Shader.** The project now has a Stylized Rendering Foundation; it is not a complete game, production rendering engine, or implemented AI product.
 
+**Current development: v0.4.0 — AI NPC Interaction (in progress).** Commit 15 adds a basic NPC interaction and local dialogue foundation; no external AI provider is connected.
+
 ## Showcase
 
 ![GenesisWorld stylized procedural world with coordinated sky, fog, lighting, and shadows](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
@@ -21,6 +23,12 @@ Ground-level Unity Game View using seed `12345`, custom terrain/environment/sky 
 | ![Height and slope driven stylized terrain](Documentation/Images/GenesisWorld_StylizedTerrain_01.png) | ![Banded environment lighting and hard shadows](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png) |
 
 Commit 13 unified the surface and environment stages through sky, fog, light, and whole-scene presentation. Earlier captures remain in `Documentation/Images/` as an honest evolution record.
+
+### NPC Interaction Foundation
+
+![Aren local dialogue in the GenesisWorld procedural scene](Documentation/Images/GenesisWorld_NPCInteraction_01.png)
+
+Commit 15 introduces the profile-driven Guide NPC, camera-targeted interaction, a TMP dialogue panel, and safe player movement locking. Aren is a project-created placeholder used to validate the interaction architecture.
 
 ## Overview
 
@@ -43,6 +51,10 @@ GenesisWorld is an open-source Unity project for digital media technology study,
 - Custom gradient skybox with zenith, horizon, lower color, and transition control
 - Linear atmospheric fog with horizon-matched color
 - Coordinated directional lighting, hard shadows, and ambient presentation
+- ScriptableObject-based NPC identity data with a stable authored ID
+- Camera-center `IInteractable` targeting with distance and visibility checks
+- TMP interaction prompt and local profile-based dialogue
+- Dialogue-safe player movement input lock and restore
 
 `Same seed + same parameters + same assets = same procedural world`
 
@@ -96,6 +108,9 @@ CPU systems own geometry and deterministic placement; GPU Shaders own surface ap
 | `EnvironmentSpawner` | Environment random stream, candidates, raycasts, filters, prefab variants, and regeneration |
 | `PlayerController` | Input, movement, sprint, jump, and gravity |
 | `CameraController` | Third-person follow, orbit, pitch clamp, smoothing, and zoom |
+| `NPCProfile` / `NPCActor` | Authored NPC identity data and the scene interaction entity |
+| `PlayerInteractionController` | Camera raycast targeting, range validation, and interact input |
+| `DialogueController` | Prompt/dialogue presentation and player-input state |
 | `StylizedTerrain` | GPU height/slope color blending and lightweight directional lighting |
 | `StylizedEnvironment` | Texture-preserving banded lighting and alpha-aware environment shadows |
 | `StylizedSkybox` | View-direction gradient sky and coordinated atmospheric horizon |
@@ -111,7 +126,8 @@ Terrain construction and environment placement are separate so each owns a clear
 | Space | Jump |
 | Mouse movement | Orbit camera |
 | Mouse wheel | Zoom |
-| Escape | Release cursor |
+| E | Talk to the targeted NPC / close dialogue |
+| Escape | Close dialogue, otherwise release cursor |
 
 ## Technology Stack
 
@@ -152,7 +168,7 @@ The Stylized Rendering Foundation is complete: custom terrain, environment, and 
 | v0.1.0 | Core Framework | ✅ Complete |
 | v0.2.0 | Procedural World | ✅ Complete |
 | v0.3.0 | Rendering & Shader | ✅ Complete |
-| v0.4.0 | AI NPC Interaction | ⏳ Planned |
+| v0.4.0 | AI NPC Interaction | 🚧 In Progress |
 | v0.5.0 | AIGC-assisted Content Pipeline | ⏳ Planned |
 
 Biomes, chunks, infinite terrain, water, advanced shaders, AI NPCs, and runtime AIGC are roadmap items—not current features.
@@ -169,6 +185,7 @@ The environment uses a curated subset of Quaternius's [Stylized Nature MegaKit](
 - [Rendering & Shader Milestone](Documentation/RenderingAndShaders_Milestone.md)
 - [Procedural Terrain](Documentation/ProceduralTerrain.md) · [Procedural Environment](Documentation/ProceduralEnvironment.md)
 - [Rendering and Shaders](Documentation/RenderingAndShaders.md)
+- [AI and NPC Interaction](Documentation/AIAndNPC.md)
 - [Third-Party Assets](Documentation/ThirdPartyAssets.md)
 
 ## License and Asset Licensing

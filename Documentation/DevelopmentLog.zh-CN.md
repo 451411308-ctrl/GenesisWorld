@@ -52,3 +52,8 @@
 
 ### Commit 14 — `Complete rendering documentation and v0.3.0 milestone`
 完成风格化渲染基础里程碑收口，按照 CPU/GPU 职责与图形学概念重组渲染技术文档，新增双语 v0.3.0 里程碑报告，优化 GitHub 展示，并准备注解标签与 Release Notes；未改变 Shader Logic、场景渲染、程序化系统或 Gameplay。
+
+## 第四周 — NPC 交互
+
+### Commit 15 — `Add NPC interaction foundation`
+新增 NPC 交互基础层，包括基于 Profile 的角色数据、视角目标交互、TMP 对话 UI、本地 Mock 回复和安全的玩家输入状态控制；当前尚未接入外部 AI Provider、网络请求或 API 凭据。

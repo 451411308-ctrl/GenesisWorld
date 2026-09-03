@@ -8,6 +8,8 @@
 
 GenesisWorld 探索程序化生成、实时图形与后续生成式 AI 系统如何构成交互式虚拟环境。**当前里程碑：v0.3.0 — 渲染与 Shader。**项目已经形成风格化渲染基础，但不是完整游戏、生产级渲染引擎，也尚未实现 AI 产品功能。
 
+**当前开发：v0.4.0 — AI NPC 交互（进行中）。**Commit 15 已加入基础 NPC 交互与本地对话框架，但尚未连接任何外部 AI Provider。
+
 ## 项目展示
 
 ![拥有协调天空、雾、光照与阴影的 GenesisWorld 风格化程序化世界](Documentation/Images/GenesisWorld_Atmosphere_Ground_01.png)
@@ -21,6 +23,12 @@ GenesisWorld 探索程序化生成、实时图形与后续生成式 AI 系统如
 | ![高度与坡度驱动的风格化地形](Documentation/Images/GenesisWorld_StylizedTerrain_01.png) | ![分层环境光照与硬阴影](Documentation/Images/GenesisWorld_StylizedEnvironment_01.png) |
 
 Commit 13 通过天空、雾、光照与完整场景呈现统一表面和环境阶段。更早截图继续保留在 `Documentation/Images/`，真实记录项目演进。
+
+### NPC 交互基础
+
+![GenesisWorld 程序化场景中的 Aren 本地对话](Documentation/Images/GenesisWorld_NPCInteraction_01.png)
+
+Commit 15 加入基于 Profile 的 Guide NPC、摄像机目标交互、TMP 对话面板与安全的玩家移动锁定。Aren 使用项目自制占位视觉，用于验证交互架构。
 
 ## 项目概述
 
@@ -43,6 +51,10 @@ GenesisWorld 是面向数字媒体技术学习、作品集展示与研究探索�
 - 支持天顶、地平线、下半球颜色与过渡控制的自定义渐变天空盒
 - 与地平线颜色匹配的线性大气雾
 - 统一的方向光、硬阴影与环境光呈现
+- 基于 ScriptableObject、拥有稳定编辑 ID 的 NPC 身份数据
+- 带距离与可见性检查的摄像机中心 `IInteractable` 目标检测
+- TMP 交互提示与基于 Profile 的本地对话
+- 对话期间安全锁定并恢复玩家移动输入
 
 `相同种子 + 相同参数 + 相同资产 = 相同程序化世界`
 
@@ -96,6 +108,9 @@ CPU 系统负责几何与确定性放置，GPU Shader 负责表面外观、光�
 | `EnvironmentSpawner` | 环境随机流、候选点、射线检测、过滤、Prefab Variant 与重新生成 |
 | `PlayerController` | 输入、移动、冲刺、跳跃与重力 |
 | `CameraController` | 第三人称跟随、环绕、俯仰限制、平滑与缩放 |
+| `NPCProfile` / `NPCActor` | 可编辑的 NPC 身份数据与场景交互实体 |
+| `PlayerInteractionController` | 摄像机射线目标、距离验证与交互输入 |
+| `DialogueController` | 提示/对话显示与玩家输入状态 |
 | `StylizedTerrain` | GPU 高度/坡度颜色混合与轻量方向光照 |
 | `StylizedEnvironment` | 保留贴图的分层光照与支持透明裁剪的环境阴影 |
 | `StylizedSkybox` | 基于观察方向的渐变天空与协调大气地平线 |
@@ -111,7 +126,8 @@ CPU 系统负责几何与确定性放置，GPU Shader 负责表面外观、光�
 | Space | 跳跃 |
 | 鼠标移动 | 环绕摄像机 |
 | 鼠标滚轮 | 缩放 |
-| Escape | 释放光标 |
+| E | 与目标 NPC 对话 / 关闭对话 |
+| Escape | 优先关闭对话，否则释放光标 |
 
 ## 技术栈
 
@@ -152,7 +168,7 @@ GenesisWorld/
 | v0.1.0 | 核心框架 | ✅ 已完成 |
 | v0.2.0 | 程序化世界 | ✅ 已完成 |
 | v0.3.0 | 渲染与 Shader | ✅ 已完成 |
-| v0.4.0 | AI NPC 交互 | ⏳ 计划中 |
+| v0.4.0 | AI NPC 交互 | 🚧 进行中 |
 | v0.5.0 | AIGC 辅助内容流程 | ⏳ 计划中 |
 
 Biome、Chunk、无限地形、水体、高级 Shader、AI NPC 与运行时 AIGC 均是未来规划，不是当前功能。
@@ -169,6 +185,7 @@ Biome、Chunk、无限地形、水体、高级 Shader、AI NPC 与运行时 AIGC
 - [渲染与 Shader 里程碑](Documentation/RenderingAndShaders_Milestone.zh-CN.md)
 - [程序化地形](Documentation/ProceduralTerrain.zh-CN.md) · [程序化环境](Documentation/ProceduralEnvironment.zh-CN.md)
 - [渲染与 Shader](Documentation/RenderingAndShaders.zh-CN.md)
+- [AI 与 NPC 交互](Documentation/AIAndNPC.zh-CN.md)
 - [第三方资源](Documentation/ThirdPartyAssets.zh-CN.md)
 
 ## 许可证与资产声明

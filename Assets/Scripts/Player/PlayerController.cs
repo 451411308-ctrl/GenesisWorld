@@ -27,12 +27,29 @@ namespace GenesisWorld.Player
         private CharacterController characterController;
         private float verticalVelocity;
         private int moveSpeedParameterHash;
+        private bool inputEnabled = true;
 
         /// <summary>当前是否接触地面。</summary>
         public bool IsGrounded => characterController != null && characterController.isGrounded;
 
         /// <summary>当前竖直速度，供后续动画或状态系统读取。</summary>
         public float VerticalVelocity => verticalVelocity;
+
+        /// <summary>玩家移动、冲刺和跳跃输入当前是否启用。</summary>
+        public bool InputEnabled => inputEnabled;
+
+        /// <summary>
+        /// 切换玩家输入。禁用时仍保留重力，避免对话期间角色悬空。
+        /// </summary>
+        public void SetInputEnabled(bool enabled)
+        {
+            inputEnabled = enabled;
+
+            if (!inputEnabled)
+            {
+                UpdateAnimator(0f);
+            }
+        }
 
         private void Awake()
         {
@@ -48,7 +65,7 @@ namespace GenesisWorld.Player
         private void Update()
         {
             Keyboard keyboard = Keyboard.current;
-            if (keyboard == null)
+            if (keyboard == null || !inputEnabled)
             {
                 ApplyGravityAndMove(Vector3.zero);
                 UpdateAnimator(0f);
